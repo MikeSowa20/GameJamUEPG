@@ -2,9 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dla3ixvmiw37k" path="res://jogador/jogador.tscn" id="1_6ba58"]
 [ext_resource type="Texture2D" uid="uid://c623nx1p32kcb" path="res://TilesetV1.1.png" id="2_lgngo"]
-[ext_resource type="PackedScene" uid="uid://bfsfyh5qriarn" path="res://inimigos/inimigo_comum.tscn" id="3_fw4w5"]
-[ext_resource type="PackedScene" uid="uid://d2m7ch8ssyusu" path="res://inimigos/inimigo_atirador.tscn" id="4_otwa2"]
-[ext_resource type="PackedScene" uid="uid://bdxvuwwjywuia" path="res://inimigos/projetil.tscn" id="5_aou4a"]
+[ext_resource type="PackedScene" uid="uid://bfsfyh5qriarn" path="res://inimigos.tscn" id="3_fw4w5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fw4w5"]
 texture = ExtResource("2_lgngo")
@@ -193,11 +191,3 @@ theme_override_colors/font_color = Color(0.007843138, 1, 0.019607844, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 
 [node name="Inimigo_comum" parent="." unique_id=594391312 instance=ExtResource("3_fw4w5")]
-position = Vector2(200, 121)
-
-[node name="Inimigo_Atirador" parent="." unique_id=1943938195 instance=ExtResource("4_otwa2")]
-velocidade = 35.0
-distancia_ideal = 180.0
-distancia_minima = 160.0
-distancia_fuga = 120.0
-projetil_cena = ExtResource("5_aou4a")

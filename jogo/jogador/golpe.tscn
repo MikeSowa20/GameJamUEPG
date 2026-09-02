@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://cthmed3vr07x4"]
+
+[sub_resource type="CurveXYZTexture" id="CurveXYZTexture_c2uh5"]
+
+[node name="Golpe" type="CharacterBody2D" unique_id=738208205]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1978015968]
+position = Vector2(15.999999, 1.9999999)
+scale = Vector2(0.12495169, 59.000004)
+texture = SubResource("CurveXYZTexture_c2uh5")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=1802310313]
+polygon = PackedVector2Array(0, 31, 0, -27, 32, -27, 32, 31)

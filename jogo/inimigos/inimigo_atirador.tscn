@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://d2m7ch8ssyusu"]
+
+[ext_resource type="Script" uid="uid://bhl53ycb02i2j" path="res://inimigos/inimigo_atirador.gd" id="1_6ojuj"]
+[ext_resource type="Texture2D" uid="uid://b5q8dqqrh53e6" path="res://icon.svg" id="1_kiius"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qpdv0"]
+size = Vector2(22, 24)
+
+[node name="Inimigo_Atirador" type="CharacterBody2D" unique_id=1943938195]
+script = ExtResource("1_6ojuj")
+
+[node name="Icon" type="Sprite2D" parent="." unique_id=479404341]
+position = Vector2(1.249999, 1.750001)
+scale = Vector2(0.19140624, 0.19921875)
+texture = ExtResource("1_kiius")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=182099171]
+position = Vector2(1, 9.536743e-07)
+shape = SubResource("RectangleShape2D_qpdv0")
+
+[node name="AttackArea" type="Node2D" parent="." unique_id=1418424856]
+
+[node name="Polygon2D" type="Polygon2D" parent="AttackArea" unique_id=1019138180]
+position = Vector2(-14, 0)
+polygon = PackedVector2Array(35, -5, 43, -5, 43, 0, 39, 0, 35, 0)

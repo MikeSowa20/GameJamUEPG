@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bdxvuwwjywuia"]
+
+[ext_resource type="Script" uid="uid://cuyhh1uca06ps" path="res://inimigos/projetil.gd" id="1_sm5ws"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_x67rw"]
+radius = 7.0
+
+[node name="Projetil" type="Area2D" unique_id=1013977942]
+script = ExtResource("1_sm5ws")
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=814831277]
+position = Vector2(-82, -29)
+polygon = PackedVector2Array(78, 26, 78, 33, 87, 33, 85, 24)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1621541474]
+shape = SubResource("CircleShape2D_x67rw")
