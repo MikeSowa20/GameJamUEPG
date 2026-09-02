@@ -37,7 +37,10 @@ var jogador: CharacterBody2D = null
 # ATAQUE
 # ==================================================
 
+# Tempo que fica carregando antes de atirar
 @export var tempo_carregamento: float = 0.5
+
+# Tempo de espera entre os tiros
 @export var tempo_cooldown: float = 1.5
 
 # Distância máxima para atacar
@@ -51,8 +54,8 @@ var jogador: CharacterBody2D = null
 # PROJÉTIL
 # ==================================================
 
-# IMPORTANTE:
-# No Inspector, coloque aqui a cena projetil.tscn
+# Arraste projetil.tscn para esta propriedade
+# no Inspector
 @export var projetil_cena: PackedScene
 
 
@@ -77,18 +80,20 @@ var pode_atacar: bool = true
 
 func _ready() -> void:
 
+	# Inicializa a vida
 	vida = vida_maxima
 
-	# Coloca o inimigo no grupo
+	# Adiciona o inimigo ao grupo
 	add_to_group("inimigos")
 
 	# Procura o jogador
 	procurar_jogador()
 
-	# Esconde a indicação do tiro
+	# Esconde a mira inicialmente
 	attack_area.visible = false
+	attack_area.color.a = 0.2
 
-	# Cria o retângulo visual
+	# Cria a linha vermelha
 	criar_area_ataque()
 
 
@@ -98,37 +103,41 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 
-	# --------------------------------------------------
-	# Procurar jogador
-	# --------------------------------------------------
+	# ==================================================
+	# PROCURAR JOGADOR
+	# ==================================================
 
 	if jogador == null or not is_instance_valid(jogador):
-
+		attack_area.color.a = 0.2
 		procurar_jogador()
 
 		velocity = Vector2.ZERO
 
-		move_and_slide()
-
 		return
 
 
-	# --------------------------------------------------
-	# Enquanto estiver carregando o tiro
-	# --------------------------------------------------
+	# ==================================================
+	# ESTÁ CARREGANDO O ATAQUE
+	# ==================================================
 
 	if atacando:
 
+		# Fica completamente parado
 		velocity = Vector2.ZERO
 
-		move_and_slide()
+		# IMPORTANTE:
+		# Atualiza a direção da mira a cada frame.
+		#
+		# Assim a linha vermelha acompanha
+		# o jogador enquanto ele se movimenta.
+		apontar_para_jogador()
 
 		return
 
 
-	# --------------------------------------------------
-	# Calcula distância
-	# --------------------------------------------------
+	# ==================================================
+	# DISTÂNCIA ATÉ O JOGADOR
+	# ==================================================
 
 	var distancia: float = global_position.distance_to(
 		jogador.global_position
@@ -152,10 +161,10 @@ func _physics_process(_delta: float) -> void:
 
 	if distancia <= alcance_ataque:
 
+		# Fica parado
 		velocity = Vector2.ZERO
 
-		move_and_slide()
-
+		# Inicia o ataque
 		if pode_atacar:
 
 			iniciar_ataque()
@@ -176,7 +185,9 @@ func _physics_process(_delta: float) -> void:
 
 func procurar_jogador() -> void:
 
-	var encontrado: Node = get_tree().get_first_node_in_group("jogador")
+	var encontrado: Node = get_tree().get_first_node_in_group(
+		"jogador"
+	)
 
 	if encontrado != null:
 
@@ -204,6 +215,7 @@ func perseguir_ate_distancia_ideal() -> void:
 	)
 
 
+	# Se estiver longe demais, aproxima
 	if distancia > distancia_ideal:
 
 		velocity = direcao * velocidade
@@ -244,154 +256,19 @@ func afastar_do_jogador() -> void:
 
 func iniciar_ataque() -> void:
 
+	# Impede múltiplos ataques simultâneos
 	if atacando:
 
 		return
 
 
+	# Verifica cooldown
 	if not pode_atacar:
 
 		return
 
 
-	if jogador == null:
-
-		return
-
-
-	# --------------------------------------------------
-	# Inicia ataque
-	# --------------------------------------------------
-
-	atacando = true
-	pode_atacar = false
-
-	# Fica parado
-	velocity = Vector2.ZERO
-
-	# Aponta a indicação para o jogador
-	apontar_para_jogador()
-
-	# Mostra a linha vermelha
-	attack_area.visible = true
-
-
-	# --------------------------------------------------
-	# CARREGAMENTO
-	# --------------------------------------------------
-
-	await get_tree().create_timer(
-		tempo_carregamento
-	).timeout
-
-
-	# --------------------------------------------------
-	# ATIRA
-	# --------------------------------------------------
-
-	if jogador != null and is_instance_valid(jogador):
-
-		atirar()
-
-
-	# --------------------------------------------------
-	# Finaliza carregamento
-	# --------------------------------------------------
-
-	attack_area.visible = false
-
-	atacando = false
-
-
-	# --------------------------------------------------
-	# COOLDOWN
-	# --------------------------------------------------
-
-	await get_tree().create_timer(
-		tempo_cooldown
-	).timeout
-
-
-	pode_atacar = true
-
-
-# ==================================================
-# ATIRAR
-# ==================================================
-
-func atirar() -> void:
-
-	# --------------------------------------------------
-	# Verifica se a cena foi configurada
-	# --------------------------------------------------
-
-	if projetil_cena == null:
-
-		print("ERRO: Cena do projétil não foi configurada!")
-
-		return
-
-
-	# --------------------------------------------------
-	# Cria o projétil
-	# --------------------------------------------------
-
-	var projetil: Area2D = projetil_cena.instantiate() as Area2D
-
-	if projetil == null:
-
-		print("ERRO: projetil.tscn não é um Area2D!")
-
-		return
-
-
-	# --------------------------------------------------
-	# Adiciona o projétil ao mundo
-	# --------------------------------------------------
-
-	get_parent().add_child(projetil)
-
-
-	# --------------------------------------------------
-	# Define a posição inicial
-	# --------------------------------------------------
-
-	projetil.global_position = global_position
-
-
-	# --------------------------------------------------
-	# Calcula a direção
-	# --------------------------------------------------
-
-	# ATENÇÃO:
-	# Essa direção é calculada UMA VEZ.
-	#
-	# Depois disso o projétil NÃO acompanha o jogador.
-
-	var direcao: Vector2 = global_position.direction_to(
-		jogador.global_position
-	)
-
-
-	# --------------------------------------------------
-	# Configura o projétil
-	# --------------------------------------------------
-
-	projetil.configurar(
-		direcao,
-		dano
-	)
-
-
-	print("Inimigo atirou!")
-
-
-# ==================================================
-# APONTAR PARA O JOGADOR
-# ==================================================
-
-func apontar_para_jogador() -> void:
-
+	# Verifica jogador
 	if jogador == null:
 
 		return
@@ -402,11 +279,228 @@ func apontar_para_jogador() -> void:
 		return
 
 
+	# ==================================================
+	# COMEÇA A CARREGAR
+	# ==================================================
+
+	atacando = true
+
+	pode_atacar = false
+
+	# Para o inimigo
+	velocity = Vector2.ZERO
+
+	# Mostra a mira
+	attack_area.visible = true
+
+	# Aponta inicialmente para o jogador
+	apontar_para_jogador()
+
+
+	print("Atirador começou a carregar!")
+
+
+	# ==================================================
+	# TEMPO DE CARREGAMENTO
+	# ==================================================
+
+	await get_tree().create_timer(
+		tempo_carregamento
+	).timeout
+
+
+	# ==================================================
+	# VERIFICAR JOGADOR
+	# ==================================================
+
+	if jogador == null or not is_instance_valid(jogador):
+
+		attack_area.visible = false
+
+		atacando = false
+
+		iniciar_cooldown()
+
+		return
+
+
+	# ==================================================
+	# ATIRAR
+	# ==================================================
+
+	atirar()
+
+
+	# ==================================================
+	# FINALIZAR ATAQUE
+	# ==================================================
+
+	attack_area.visible = false
+
+	atacando = false
+
+	print("Atirador disparou!")
+
+
+	# ==================================================
+	# INICIAR COOLDOWN
+	# ==================================================
+
+	iniciar_cooldown()
+
+
+# ==================================================
+# COOLDOWN
+# ==================================================
+
+func iniciar_cooldown() -> void:
+
+	await get_tree().create_timer(
+		tempo_cooldown
+	).timeout
+
+
+	# Se o inimigo ainda existir
+	if not is_instance_valid(self):
+
+		return
+
+
+	pode_atacar = true
+
+	print("Atirador pode disparar novamente!")
+
+
+# ==================================================
+# ATIRAR
+# ==================================================
+
+func atirar() -> void:
+
+	# ==================================================
+	# VERIFICAR CENA DO PROJÉTIL
+	# ==================================================
+
+	if projetil_cena == null:
+
+		print(
+			"ERRO: projetil_cena não foi configurada!"
+		)
+
+		return
+
+
+	# ==================================================
+	# CRIAR PROJÉTIL
+	# ==================================================
+
+	var projetil: Area2D = (
+		projetil_cena.instantiate()
+		as Area2D
+	)
+
+
+	if projetil == null:
+
+		print(
+			"ERRO: projetil.tscn precisa ter Area2D como raiz!"
+		)
+
+		return
+
+
+	# ==================================================
+	# ADICIONAR AO MUNDO
+	# ==================================================
+
+	get_parent().add_child(projetil)
+
+
+	# ==================================================
+	# CALCULAR DIREÇÃO
+	# ==================================================
+
+	# A direção é calculada NO MOMENTO DO DISPARO.
+	#
+	# Portanto, se o jogador se movimentou durante
+	# o carregamento, o tiro será direcionado para
+	# a posição atual dele.
+
 	var direcao: Vector2 = global_position.direction_to(
 		jogador.global_position
 	)
 
 
+	# ==================================================
+	# POSIÇÃO INICIAL
+	# ==================================================
+
+	# Faz o projétil nascer um pouco à frente
+	# do inimigo.
+
+	var distancia_inicial: float = 25.0
+
+	projetil.global_position = (
+		global_position
+		+ direcao * distancia_inicial
+	)
+
+
+	# ==================================================
+	# CONFIGURAR PROJÉTIL
+	# ==================================================
+
+	if projetil.has_method("configurar"):
+
+		projetil.configurar(
+			direcao,
+			dano,
+			self
+		)
+
+	else:
+
+		print(
+			"ERRO: projetil não possui a função configurar()!"
+		)
+
+		projetil.queue_free()
+
+		return
+
+
+	print("================================")
+	print("PROJÉTIL DISPARADO!")
+	print("Direção: ", direcao)
+	print("Dano: ", dano)
+	print("================================")
+
+
+# ==================================================
+# APONTAR PARA O JOGADOR
+# ==================================================
+
+func apontar_para_jogador() -> void:
+	
+	attack_area.color.a = 0.2
+	
+	if jogador == null:
+
+		return
+
+
+	if not is_instance_valid(jogador):
+
+		return
+
+
+	# Calcula a direção atual até o jogador
+	var direcao: Vector2 = global_position.direction_to(
+		jogador.global_position
+	)
+
+
+	# Rotaciona a linha vermelha
 	attack_area.rotation = direcao.angle()
 
 
@@ -416,23 +510,44 @@ func apontar_para_jogador() -> void:
 
 func criar_area_ataque() -> void:
 
+	# Comprimento da linha
 	var comprimento: float = alcance_ataque
+
+	# Espessura da linha
 	var largura: float = 8.0
 
 	var metade_largura: float = largura / 2.0
 
 
+	# Cria um retângulo começando no inimigo
 	var pontos := PackedVector2Array([
-		Vector2(0, -metade_largura),
-		Vector2(comprimento, -metade_largura),
-		Vector2(comprimento, metade_largura),
-		Vector2(0, metade_largura)
+
+		Vector2(
+			0,
+			-metade_largura
+		),
+
+		Vector2(
+			comprimento,
+			-metade_largura
+		),
+
+		Vector2(
+			comprimento,
+			metade_largura
+		),
+
+		Vector2(
+			0,
+			metade_largura
+		)
 	])
 
 
 	attack_area.polygon = pontos
 
-	# Vermelho com transparência
+
+	# Vermelho semi-transparente
 	attack_area.color = Color(
 		1.0,
 		0.0,
@@ -449,6 +564,7 @@ func receber_dano(valor: float) -> void:
 
 	vida -= valor
 
+
 	vida = clamp(
 		vida,
 		0.0,
@@ -463,6 +579,10 @@ func receber_dano(valor: float) -> void:
 		vida
 	)
 
+
+	# ==================================================
+	# MORTE
+	# ==================================================
 
 	if vida <= 0.0:
 

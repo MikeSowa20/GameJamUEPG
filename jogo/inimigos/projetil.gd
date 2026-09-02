@@ -5,7 +5,7 @@ extends Area2D
 # CONFIGURAÇÕES
 # ==================================================
 
-@export var velocidade: float = 250.0
+@export var velocidade: float = 350.0
 @export var tempo_vida: float = 5.0
 
 
@@ -15,6 +15,9 @@ extends Area2D
 
 var direcao: Vector2 = Vector2.ZERO
 var dano: float = 10.0
+
+# Inimigo que criou o projétil
+var dono: Node = null
 
 
 # ==================================================
@@ -26,18 +29,16 @@ func _ready() -> void:
 	# Coloca o projétil no grupo
 	add_to_group("projeteis")
 
-	# Detecta quando entra em um CharacterBody2D
+	# Detecta colisões com corpos
 	body_entered.connect(_quando_entrou_em_corpo)
 
-	# Depois de alguns segundos, destrói o projétil
+	# Tempo máximo de vida
 	await get_tree().create_timer(
 		tempo_vida
 	).timeout
 
-
-	# Evita erro caso já tenha sido destruído
+	# Se ainda existir, destrói
 	if is_instance_valid(self):
-
 		queue_free()
 
 
@@ -47,16 +48,20 @@ func _ready() -> void:
 
 func configurar(
 	nova_direcao: Vector2,
-	novo_dano: float
+	novo_dano: float,
+	novo_dono: Node = null
 ) -> void:
 
-	# Guarda a direção do tiro
+	# Guarda a direção
 	direcao = nova_direcao.normalized()
 
 	# Guarda o dano
 	dano = novo_dano
 
-	# Gira o projétil para a direção do movimento
+	# Guarda quem disparou
+	dono = novo_dono
+
+	# Gira o projétil para a direção
 	rotation = direcao.angle()
 
 
@@ -66,23 +71,11 @@ func configurar(
 
 func _physics_process(delta: float) -> void:
 
-	# Se ainda não recebeu uma direção,
-	# não faz nada.
+	# Ainda não recebeu uma direção
 	if direcao == Vector2.ZERO:
-
 		return
 
-
-	# --------------------------------------------------
-	# Movimento em linha reta
-	# --------------------------------------------------
-	#
-	# IMPORTANTE:
-	# A direção NÃO é recalculada.
-	#
-	# Portanto, se o jogador se mover depois do tiro,
-	# o projétil continua seguindo a direção original.
-
+	# Move em linha reta
 	global_position += direcao * velocidade * delta
 
 
@@ -94,18 +87,29 @@ func _quando_entrou_em_corpo(
 	corpo: Node2D
 ) -> void:
 
-	# --------------------------------------------------
-	# Verifica se acertou o jogador
-	# --------------------------------------------------
+	# ==================================================
+	# IGNORAR O DONO
+	# ==================================================
+
+	if corpo == dono:
+		return
+
+
+	# ==================================================
+	# JOGADOR
+	# ==================================================
 
 	if corpo.is_in_group("jogador"):
 
+		print("================================")
+		print("PROJÉTIL ATINGIU O JOGADOR!")
+		print("Dano: ", dano)
+		print("================================")
+
+		# Verifica se o jogador possui receber_dano()
 		if corpo.has_method("receber_dano"):
 
 			corpo.receber_dano(dano)
-
-			print("Projétil acertou o jogador!")
-
 
 		# Destrói o projétil
 		queue_free()
@@ -113,8 +117,14 @@ func _quando_entrou_em_corpo(
 		return
 
 
-	# --------------------------------------------------
-	# Se bateu em qualquer outro corpo
-	# --------------------------------------------------
+	# ==================================================
+	# OUTRO CORPO
+	# ==================================================
 
+	print(
+		"Projétil colidiu com: ",
+		corpo.name
+	)
+
+	# Destrói ao bater em parede/obstáculo
 	queue_free()

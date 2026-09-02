@@ -175,6 +175,15 @@ tile_set = SubResource("TileSet_3xd07")
 
 [node name="jogador" parent="." unique_id=1251063661 instance=ExtResource("1_6ba58")]
 y_sort_enabled = true
+velocidade = null
+distancia_dash = null
+velocidade_dash = null
+cooldown_dash = null
+vida_maxima = null
+alcance_ataque = null
+angulo_ataque = null
+dano = null
+duracao_ataque = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=848189495]
 

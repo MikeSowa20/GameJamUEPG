@@ -8,16 +8,19 @@ extends CharacterBody2D
 @export var velocidade: float = 50.0
 
 # Distância para começar a carregar a explosão
-@export var distancia_ativacao: float = 100.0
+@export var distancia_ativacao: float = 60.0
 
 # Raio da explosão
-@export var raio_explosao: float = 100.0
+@export var raio_explosao: float = 70.0
 
-# Dano da explosão
+# Dano causado pela explosão
 @export var dano: float = 20.0
 
-# Tempo tremendo antes de explodir
-@export var tempo_carregamento: float = 1.0
+# Tempo tremendo antes da explosão
+@export var tempo_carregamento: float = 0.8
+
+# Tempo esperando depois da explosão
+@export var tempo_cooldown: float = 3.0
 
 # Intensidade da tremedeira
 @export var intensidade_tremor: float = 5.0
@@ -40,6 +43,7 @@ var jogador: CharacterBody2D = null
 
 var carregando := false
 var explodindo := false
+var em_cooldown := false
 
 
 # ==================================================
@@ -47,10 +51,8 @@ var explodindo := false
 # ==================================================
 
 @onready var icon: Node2D = $Icon
-@onready var raio_dano: Node2D = $CanvasLayer/raioDano
+@onready var raio_dano: Node2D = $raioDano
 
-# IMPORTANTE:
-# Na sua cena o nome é Area2D
 @onready var area_dano: Area2D = $Area2D
 
 @onready var collision_dano: CollisionShape2D = $Area2D/CollisionShape2D
@@ -68,17 +70,19 @@ func _ready() -> void:
 
 	procurar_jogador()
 
-	# Esconde o raio inicialmente
+	# Centraliza o raio no inimigo
+	raio_dano.position = Vector2.ZERO
+	raio_dano.color.a = 0.2
+
+	# Esconde inicialmente
 	raio_dano.visible = false
 
-	# Cria o círculo de colisão
+	# Cria o círculo de dano
 	var circulo := CircleShape2D.new()
-
 	circulo.radius = raio_explosao
 
 	collision_dano.shape = circulo
 
-	# Desativa a área até a explosão
 	area_dano.monitoring = false
 
 
@@ -88,10 +92,14 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 
-	if explodindo:
+	# Se estiver explodindo ou no cooldown,
+	# permanece parado
+	if explodindo or em_cooldown:
+		velocity = Vector2.ZERO
 		return
 
-	# Se não encontrou o jogador
+
+	# Procura o jogador caso ele não exista
 	if not is_instance_valid(jogador):
 
 		procurar_jogador()
@@ -101,14 +109,14 @@ func _physics_process(_delta: float) -> void:
 		return
 
 
-	# Calcula distância até o jogador
+	# Calcula a distância até o jogador
 	var distancia := global_position.distance_to(
 		jogador.global_position
 	)
 
 
 	# ==================================================
-	# COMEÇAR A CARREGAR EXPLOSÃO
+	# COMEÇAR A CARREGAR
 	# ==================================================
 
 	if distancia <= distancia_ativacao:
@@ -152,7 +160,7 @@ func procurar_jogador() -> void:
 
 func iniciar_carregamento() -> void:
 
-	if carregando:
+	if carregando or explodindo or em_cooldown:
 		return
 
 	carregando = true
@@ -162,7 +170,7 @@ func iniciar_carregamento() -> void:
 	print("Inimigo explosivo começou a carregar!")
 
 
-	# Mostra área da explosão
+	# Mostra o raio
 	raio_dano.visible = true
 
 
@@ -183,7 +191,7 @@ func tremer() -> void:
 
 	while tempo < tempo_carregamento:
 
-		# Tremedeira aleatória
+		# Tremor aleatório
 		icon.position = posicao_original + Vector2(
 			randf_range(
 				-intensidade_tremor,
@@ -200,7 +208,7 @@ func tremer() -> void:
 		tempo += get_process_delta_time()
 
 
-	# Volta para a posição original
+	# Retorna à posição original
 	icon.position = posicao_original
 
 
@@ -218,32 +226,61 @@ func explodir() -> void:
 		return
 
 	explodindo = true
-
 	carregando = false
 
 	velocity = Vector2.ZERO
 
-	print("EXPLOSAO!")
+	print("💥 EXPLOSÃO!")
 
 
 	# Ativa a área de dano
 	area_dano.monitoring = true
 
 
-	# Verifica se o jogador está dentro do círculo
+	# Verifica se o jogador está dentro do raio
 	aplicar_dano()
 
 
-	# Aguarda um pouco
+	# Mantém o efeito da explosão por um pequeno tempo
 	await get_tree().create_timer(0.15).timeout
 
 
 	# Desativa a área
 	area_dano.monitoring = false
 
+	raio_dano.visible = false
 
-	# Remove o inimigo
-	morrer()
+
+	# Finaliza a explosão
+	explodindo = false
+
+
+	# Começa o cooldown de 3 segundos
+	iniciar_cooldown()
+
+
+# ==================================================
+# COOLDOWN
+# ==================================================
+
+func iniciar_cooldown() -> void:
+
+	if em_cooldown:
+		return
+
+	em_cooldown = true
+
+	velocity = Vector2.ZERO
+
+	print("Inimigo entrou em cooldown por ", tempo_cooldown, " segundos.")
+
+
+	await get_tree().create_timer(tempo_cooldown).timeout
+
+
+	em_cooldown = false
+
+	print("Inimigo pode explodir novamente!")
 
 
 # ==================================================
