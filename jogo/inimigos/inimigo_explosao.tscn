@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://cs21mvh06cune"]
+
+[ext_resource type="Texture2D" uid="uid://b5q8dqqrh53e6" path="res://icon.svg" id="1_lbq0j"]
+[ext_resource type="Script" uid="uid://np4ncrnj3e0f" path="res://inimigos/inimigo_explosao.gd" id="1_vr3oh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qpdv0"]
+size = Vector2(38, 33)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qpdv0"]
+radius = 60.133186
+
+[node name="InimigoExplosao" type="CharacterBody2D" unique_id=1696728883]
+script = ExtResource("1_vr3oh")
+
+[node name="Icon" type="Sprite2D" parent="." unique_id=282456477]
+position = Vector2(1, 1)
+scale = Vector2(0.328125, 0.2734375)
+texture = ExtResource("1_lbq0j")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1822658264]
+position = Vector2(1, 0.5)
+shape = SubResource("RectangleShape2D_qpdv0")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=754959800]
+position = Vector2(1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1302687860]
+shape = SubResource("CircleShape2D_qpdv0")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=288696230]
+
+[node name="raioDano" type="Polygon2D" parent="CanvasLayer" unique_id=1338792807]
+use_parent_material = true
+position = Vector2(-3, 1)
+color = Color(1, 0, 0, 1)
+polygon = PackedVector2Array(-48, -43, -54, -28, -59, -11, -59, 15, -53, 31, -32, 50, -1, 62, 34, 53, 36, 50, 41, 46, 46, 41, 53, 31, 58, 11, 57, -16, 47, -39, 33, -53, -2, -59, -25, -54, -37, -50)
+uv = PackedVector2Array(-32.799988, 28.400002)

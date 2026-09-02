@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bfsfyh5qriarn" path="res://inimigos/inimigo_comum.tscn" id="3_fw4w5"]
 [ext_resource type="PackedScene" uid="uid://d2m7ch8ssyusu" path="res://inimigos/inimigo_atirador.tscn" id="4_otwa2"]
 [ext_resource type="PackedScene" uid="uid://bdxvuwwjywuia" path="res://inimigos/projetil.tscn" id="5_aou4a"]
+[ext_resource type="PackedScene" uid="uid://cs21mvh06cune" path="res://inimigos/inimigo_explosao.tscn" id="6_5ckkb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fw4w5"]
 texture = ExtResource("2_lgngo")
@@ -198,6 +199,8 @@ position = Vector2(200, 121)
 [node name="Inimigo_Atirador" parent="." unique_id=1943938195 instance=ExtResource("4_otwa2")]
 velocidade = 35.0
 distancia_ideal = 180.0
-distancia_minima = 160.0
 distancia_fuga = 120.0
 projetil_cena = ExtResource("5_aou4a")
+
+[node name="InimigoExplosao" parent="." unique_id=1696728883 instance=ExtResource("6_5ckkb")]
+position = Vector2(86, 149)
