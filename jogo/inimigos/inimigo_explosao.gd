@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const EFEITOS = preload("res://efeitos_visuais.gd")
+
 
 # ==================================================
 # CONFIGURAÇÕES
@@ -16,6 +18,7 @@ extends CharacterBody2D
 
 # Dano causado pela explosão
 const DANO_AO_JOGADOR: int = 1
+const FATOR_DIFICULDADE: float = 1.5
 
 # Tempo preparando a explosão
 @export var tempo_carregamento: float = 1.5
@@ -61,6 +64,7 @@ const DANO_AO_JOGADOR: int = 1
 @export var vida_maxima: float = 30.0
 
 var vida: float
+var recompensa_moedas: int = 1
 
 
 # ==================================================
@@ -117,6 +121,14 @@ var icon_rotacao_original: float
 # ==================================================
 
 func _ready() -> void:
+	var atributos: Dictionary = DificuldadeGlobal.aplicar_dificuldade_inimigo(
+		vida_maxima,
+		velocidade,
+		FATOR_DIFICULDADE
+	)
+	vida_maxima = atributos["vida"]
+	velocidade = atributos["velocidade"]
+	recompensa_moedas = atributos["recompensa"]
 
 	vida = vida_maxima
 
@@ -358,6 +370,13 @@ func iniciar_carregamento() -> void:
 	# ==================================================
 
 	raio_dano.visible = true
+	EFEITOS.criar_onda(
+		get_parent(),
+		global_position,
+		Color(1.0, 0.55, 0.1, 0.75),
+		24.0,
+		0.35
+	)
 
 
 	print("================================")
@@ -380,6 +399,7 @@ func iniciar_carregamento() -> void:
 func tremer() -> void:
 
 	var tempo: float = 0.0
+	var proximo_pulso: float = 0.0
 
 
 	while tempo < tempo_carregamento:
@@ -407,6 +427,22 @@ func tremer() -> void:
 			0.0,
 			1.0
 		)
+
+		if tempo >= proximo_pulso:
+			var cor_pulso: Color = Color(
+				1.0,
+				lerp(0.75, 0.15, progresso),
+				0.05,
+				0.75
+			)
+			EFEITOS.criar_onda(
+				get_parent(),
+				global_position,
+				cor_pulso,
+				lerp(25.0, raio_explosao, progresso),
+				lerp(0.35, 0.16, progresso)
+			)
+			proximo_pulso += lerp(0.32, 0.14, progresso)
 
 
 		# ==================================================
@@ -576,6 +612,27 @@ func explodir() -> void:
 	raio_dano.visible = true
 
 	area_dano.monitoring = true
+	EFEITOS.criar_clarao(
+		get_parent(),
+		global_position,
+		Color(1.0, 0.9, 0.45, 1.0),
+		38.0,
+		0.22
+	)
+	EFEITOS.criar_onda(
+		get_parent(),
+		global_position,
+		Color(1.0, 0.3, 0.05, 1.0),
+		raio_explosao,
+		0.32
+	)
+	EFEITOS.criar_onda(
+		get_parent(),
+		global_position,
+		Color(1.0, 0.8, 0.25, 0.7),
+		raio_explosao * 1.25,
+		0.48
+	)
 
 
 	# ==================================================
@@ -802,6 +859,7 @@ func morrer() -> void:
 	if morrendo:
 		return
 	morrendo = true
+	DificuldadeGlobal.dropar_moedas(global_position, recompensa_moedas)
 
 	print("Extintor morreu!")
 

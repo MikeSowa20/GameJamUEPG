@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const EFEITOS = preload("res://efeitos_visuais.gd")
+
 
 # ============================================================
 # MOVIMENTO
@@ -44,6 +46,8 @@ var jogador: CharacterBody2D = null
 @export var alcance_ataque: float = 300.0
 
 const DANO_AO_JOGADOR: int = 1
+const FATOR_DIFICULDADE: float = 1.25
+var recompensa_moedas: int = 1
 
 
 # ============================================================
@@ -94,6 +98,7 @@ var recuando_ao_atirar: bool = false
 var chacoalhando: bool = false
 var direcao_recuo_tiro: Vector2 = Vector2.ZERO
 var recuo_restante: float = 0.0
+var tween_mira: Tween = null
 
 
 # ============================================================
@@ -131,6 +136,14 @@ var sprite_rotacao_original: float
 # ============================================================
 
 func _ready() -> void:
+	var atributos: Dictionary = DificuldadeGlobal.aplicar_dificuldade_inimigo(
+		vida_maxima,
+		velocidade,
+		FATOR_DIFICULDADE
+	)
+	vida_maxima = atributos["vida"]
+	velocidade = atributos["velocidade"]
+	recompensa_moedas = atributos["recompensa"]
 
 	vida = vida_maxima
 
@@ -434,6 +447,7 @@ func iniciar_ataque() -> void:
 	# Mostra a área vermelha
 
 	attack_polygon.visible = true
+	iniciar_pulso_mira()
 
 
 	# Aponta para o jogador
@@ -480,6 +494,7 @@ func iniciar_ataque() -> void:
 	# ========================================================
 
 	attack_polygon.visible = false
+	parar_pulso_mira()
 
 	atacando = false
 
@@ -545,6 +560,20 @@ func efeito_disparo() -> void:
 
 	direcao_recuo_tiro = -direcao
 	recuo_restante = distancia_recuo_tiro
+	EFEITOS.criar_onda(
+		get_parent(),
+		global_position + direcao * 22.0,
+		Color(0.2, 0.85, 1.0, 0.9),
+		28.0,
+		0.24
+	)
+	EFEITOS.criar_clarao(
+		get_parent(),
+		global_position + direcao * 25.0,
+		Color(0.75, 0.95, 1.0, 1.0),
+		18.0,
+		0.16
+	)
 
 
 	# ========================================================
@@ -636,6 +665,34 @@ func finalizar_recuo_tiro() -> void:
 	recuo_restante = 0.0
 	direcao_recuo_tiro = Vector2.ZERO
 	velocity = Vector2.ZERO
+
+
+func iniciar_pulso_mira() -> void:
+	parar_pulso_mira()
+	attack_polygon.modulate = Color(1.0, 0.25, 0.2, 0.25)
+	tween_mira = create_tween()
+	tween_mira.set_loops()
+	tween_mira.set_trans(Tween.TRANS_SINE)
+	tween_mira.set_ease(Tween.EASE_IN_OUT)
+	tween_mira.tween_property(
+		attack_polygon,
+		"modulate:a",
+		0.9,
+		0.13
+	)
+	tween_mira.tween_property(
+		attack_polygon,
+		"modulate:a",
+		0.25,
+		0.13
+	)
+
+
+func parar_pulso_mira() -> void:
+	if tween_mira != null and tween_mira.is_valid():
+		tween_mira.kill()
+	tween_mira = null
+	attack_polygon.modulate = Color.WHITE
 
 
 # ============================================================
@@ -930,6 +987,7 @@ func morrer() -> void:
 	if morrendo:
 		return
 	morrendo = true
+	DificuldadeGlobal.dropar_moedas(global_position, recompensa_moedas)
 
 	print("Inimigo atirador morreu!")
 	velocity = Vector2.ZERO
@@ -937,6 +995,7 @@ func morrer() -> void:
 	pode_atacar = false
 	recuando_ao_atirar = false
 	attack_polygon.visible = false
+	parar_pulso_mira()
 	set_physics_process(false)
 	$CollisionShape2D.set_deferred("disabled", true)
 	var tween: Tween = create_tween()

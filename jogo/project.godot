@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Jogo"
-run/main_scene="uid://flg5fp6f8dcf"
+run/main_scene="res://menu_inicial.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+DificuldadeGlobal="*res://dificuldade_global.gd"
 
 [display]
 

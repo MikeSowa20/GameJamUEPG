@@ -14,9 +14,11 @@ extends CharacterBody2D
 
 @export var vida_maxima: float = 30.0
 const DANO_AO_JOGADOR: int = 1
+const FATOR_DIFICULDADE: float = 1.0
 
 var vida: float
 var jogador: CharacterBody2D = null
+var recompensa_moedas: int = 1
 
 
 # ==================================================
@@ -44,6 +46,14 @@ var morrendo: bool = false
 # ==================================================
 
 func _ready() -> void:
+	var atributos: Dictionary = DificuldadeGlobal.aplicar_dificuldade_inimigo(
+		vida_maxima,
+		velocidade,
+		FATOR_DIFICULDADE
+	)
+	vida_maxima = atributos["vida"]
+	velocidade = atributos["velocidade"]
+	recompensa_moedas = atributos["recompensa"]
 
 	vida = vida_maxima
 
@@ -394,6 +404,7 @@ func morrer() -> void:
 	if morrendo:
 		return
 	morrendo = true
+	DificuldadeGlobal.dropar_moedas(global_position, recompensa_moedas)
 
 	print("Inimigo morreu!")
 	velocity = Vector2.ZERO

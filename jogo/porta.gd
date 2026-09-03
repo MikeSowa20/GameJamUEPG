@@ -31,3 +31,5 @@ func _trocar_para_proxima_sala(caminho: String) -> void:
 		trocando_sala = false
 		monitoring = true
 		push_error("Não foi possível abrir a sala: " + caminho)
+	else:
+		DificuldadeGlobal.call_deferred("mostrar_escolha_melhoria")

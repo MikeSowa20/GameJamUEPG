@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const EFEITOS = preload("res://efeitos_visuais.gd")
+
 
 # ==================================================
 # MOVIMENTO
@@ -38,6 +40,7 @@ var dash_disponivel: bool = true
 const CORACOES_INICIAIS: int = 5
 
 var vida: int
+var morto: bool = false
 
 @onready var barra_vida: HBoxContainer = $"../CanvasLayer/BarraVida"
 
@@ -97,7 +100,15 @@ func _ready() -> void:
 	# VIDA
 	# ==================================================
 
-	vida = CORACOES_INICIAIS
+	if not DificuldadeGlobal.vida_inicializada:
+		DificuldadeGlobal.vida_jogador = CORACOES_INICIAIS
+		DificuldadeGlobal.vida_inicializada = true
+	vida = clampi(
+		DificuldadeGlobal.vida_jogador,
+		0,
+		CORACOES_INICIAIS
+	)
+	velocidade *= DificuldadeGlobal.multiplicador_velocidade_jogador
 
 
 	# ==================================================
@@ -606,6 +617,7 @@ func iniciar_dash() -> void:
 	# ==================================================
 
 	var distancia_percorrida: float = 0.0
+	var contador_pos_imagem: int = 0
 
 
 	# ==================================================
@@ -613,6 +625,14 @@ func iniciar_dash() -> void:
 	# ==================================================
 
 	while distancia_percorrida < distancia_dash:
+		contador_pos_imagem += 1
+		if contador_pos_imagem % 2 == 0:
+			EFEITOS.criar_pos_imagem(
+				animacao,
+				get_parent(),
+				Color(0.25, 0.85, 1.0, 0.5),
+				0.24
+			)
 
 		# --------------------------------------------------
 		# Movimento deste frame
@@ -721,6 +741,21 @@ func iniciar_cooldown_dash() -> void:
 # ==================================================
 
 func receber_dano(_valor: float = 1.0) -> void:
+	if morto:
+		return
+
+	animacao.modulate = Color(1.0, 0.2, 0.2, 1.0)
+	var tween_impacto := create_tween()
+	tween_impacto.set_trans(Tween.TRANS_SINE)
+	tween_impacto.set_ease(Tween.EASE_OUT)
+	tween_impacto.tween_property(animacao, "modulate", Color.WHITE, 0.22)
+	EFEITOS.criar_onda(
+		get_parent(),
+		global_position,
+		Color(1.0, 0.15, 0.12, 0.8),
+		22.0,
+		0.2
+	)
 
 	# ==================================================
 	# DIMINUIR VIDA
@@ -738,6 +773,7 @@ func receber_dano(_valor: float = 1.0) -> void:
 		0,
 		CORACOES_INICIAIS
 	)
+	DificuldadeGlobal.vida_jogador = vida
 
 
 	# ==================================================
@@ -781,11 +817,21 @@ func atualizar_coracoes() -> void:
 		barra_vida.add_child(coracao)
 
 
+func recuperar_vida_total() -> void:
+	vida = CORACOES_INICIAIS
+	DificuldadeGlobal.vida_jogador = vida
+	atualizar_coracoes()
+
+
 # ==================================================
 # MORRER
 # ==================================================
 
 func morrer() -> void:
+	if morto:
+		return
+	morto = true
+	DificuldadeGlobal.registrar_morte()
 
 	print(
 		"Jogador morreu!"
@@ -807,6 +853,21 @@ func morrer() -> void:
 	# Animação parado
 
 	animacao.play("parado")
+	set_physics_process(false)
+	$CollisionShape2D.set_deferred("disabled", true)
+
+	var tween_morte := create_tween()
+	tween_morte.set_parallel(true)
+	tween_morte.set_trans(Tween.TRANS_QUAD)
+	tween_morte.set_ease(Tween.EASE_IN)
+	tween_morte.tween_property(animacao, "modulate:a", 0.0, 0.65)
+	tween_morte.tween_property(animacao, "scale", animacao.scale * 0.65, 0.65)
+	await tween_morte.finished
+
+	get_tree().paused = false
+	var erro: Error = get_tree().change_scene_to_file("res://menu_inicial.tscn")
+	if erro != OK:
+		push_error("Não foi possível voltar ao menu inicial.")
 
 
 # ==================================================
