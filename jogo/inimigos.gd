@@ -13,7 +13,7 @@ extends CharacterBody2D
 # ==================================================
 
 @export var vida_maxima: float = 30.0
-@export var dano: float = 10.0
+const DANO_AO_JOGADOR: int = 1
 
 var vida: float
 var jogador: CharacterBody2D = null
@@ -33,8 +33,10 @@ var jogador: CharacterBody2D = null
 
 var atacando: bool = false
 var pode_atacar: bool = true
+var morrendo: bool = false
 
 @onready var attack_area: Polygon2D = $AttackArea/Polygon2D
+@onready var icon: AnimatedSprite2D = $Icon
 
 
 # ==================================================
@@ -73,6 +75,7 @@ func _physics_process(_delta: float) -> void:
 		procurar_jogador()
 
 		velocity = Vector2.ZERO
+		icon.play("parado")
 
 		return
 
@@ -85,6 +88,7 @@ func _physics_process(_delta: float) -> void:
 
 		# O inimigo fica completamente parado
 		velocity = Vector2.ZERO
+		icon.play("parado")
 
 		move_and_slide()
 
@@ -128,6 +132,8 @@ func _physics_process(_delta: float) -> void:
 	# ==================================================
 
 	velocity = direcao * velocidade
+	icon.flip_h = direcao.x < 0.0
+	icon.play("andar")
 
 	move_and_slide()
 
@@ -168,6 +174,7 @@ func iniciar_ataque() -> void:
 
 	# Para imediatamente
 	velocity = Vector2.ZERO
+	icon.play("ataque")
 
 
 	# ==================================================
@@ -275,7 +282,7 @@ func verificar_dano_ataque() -> void:
 
 		if jogador.has_method("receber_dano"):
 
-			jogador.receber_dano(dano)
+			jogador.receber_dano(DANO_AO_JOGADOR)
 
 			print("Inimigo atacou o jogador!")
 
@@ -297,6 +304,7 @@ func apontar_area_para_jogador() -> void:
 	)
 
 	attack_area.rotation = direcao.angle()
+	icon.flip_h = direcao.x < 0.0
 
 
 # ==================================================
@@ -336,6 +344,7 @@ func finalizar_ataque() -> void:
 
 	# Libera o movimento
 	atacando = false
+	icon.play("parado")
 
 
 	# ==================================================
@@ -354,6 +363,8 @@ func finalizar_ataque() -> void:
 # ==================================================
 
 func receber_dano(valor: float) -> void:
+	if morrendo:
+		return
 
 	vida -= valor
 
@@ -380,7 +391,26 @@ func receber_dano(valor: float) -> void:
 # ==================================================
 
 func morrer() -> void:
+	if morrendo:
+		return
+	morrendo = true
 
 	print("Inimigo morreu!")
+	velocity = Vector2.ZERO
+	atacando = false
+	pode_atacar = false
+	attack_area.visible = false
+	icon.play("derrotado")
+	set_physics_process(false)
+	$CollisionShape2D.set_deferred("disabled", true)
+	var tween: Tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "modulate", Color(1, 1, 1, 0), 0.4)
+	tween.tween_property(self, "scale", scale * 0.15, 0.4)
+	tween.tween_property(self, "position", position + Vector2(0, -12), 0.4)
+	tween.tween_property(self, "rotation", rotation + deg_to_rad(90.0), 0.4)
+	await tween.finished
 
 	queue_free()

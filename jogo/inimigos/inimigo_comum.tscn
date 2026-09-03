@@ -1,20 +1,73 @@
 [gd_scene format=3 uid="uid://bfsfyh5qriarn"]
 
 [ext_resource type="Script" uid="uid://dxlwt2ubkcam4" path="res://inimigos.gd" id="1_klq5n"]
-[ext_resource type="Texture2D" uid="uid://b5q8dqqrh53e6" path="res://icon.svg" id="2_8pes2"]
+[ext_resource type="Texture2D" path="res://inimigos/computador_spritesheet.png" id="2_computador"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qpdv0"]
-size = Vector2(18, 17)
+size = Vector2(28, 30)
+
+[sub_resource type="AtlasTexture" id="Atlas_computador_idle_1"]
+atlas = ExtResource("2_computador")
+region = Rect2(0, 0, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_idle_2"]
+atlas = ExtResource("2_computador")
+region = Rect2(432, 0, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_andar_1"]
+atlas = ExtResource("2_computador")
+region = Rect2(864, 0, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_andar_2"]
+atlas = ExtResource("2_computador")
+region = Rect2(1296, 0, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_ataque_1"]
+atlas = ExtResource("2_computador")
+region = Rect2(0, 432, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_ataque_2"]
+atlas = ExtResource("2_computador")
+region = Rect2(432, 432, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_ataque_3"]
+atlas = ExtResource("2_computador")
+region = Rect2(864, 432, 432, 432)
+[sub_resource type="AtlasTexture" id="Atlas_computador_derrotado"]
+atlas = ExtResource("2_computador")
+region = Rect2(1296, 432, 432, 432)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_computador"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_computador_idle_1")}, {"duration": 1.0, "texture": SubResource("Atlas_computador_idle_2")}],
+"loop": true,
+"name": &"parado",
+"speed": 2.5
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_computador_andar_1")}, {"duration": 1.0, "texture": SubResource("Atlas_computador_andar_2")}],
+"loop": true,
+"name": &"andar",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_computador_ataque_1")}, {"duration": 1.0, "texture": SubResource("Atlas_computador_ataque_2")}, {"duration": 1.0, "texture": SubResource("Atlas_computador_ataque_3")}],
+"loop": false,
+"name": &"ataque",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_computador_derrotado")}],
+"loop": false,
+"name": &"derrotado",
+"speed": 1.0
+}]
 
 [node name="Inimigo_comum" type="CharacterBody2D" unique_id=594391312]
+motion_mode = 1
 script = ExtResource("1_klq5n")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1631021233]
 shape = SubResource("RectangleShape2D_qpdv0")
 
-[node name="Icon" type="Sprite2D" parent="." unique_id=1500674515]
-scale = Vector2(0.15625, 0.1484375)
-texture = ExtResource("2_8pes2")
+[node name="Icon" type="AnimatedSprite2D" parent="." unique_id=1500674515]
+texture_filter = 1
+position = Vector2(0, -8)
+scale = Vector2(0.105, 0.105)
+sprite_frames = SubResource("SpriteFrames_computador")
+animation = &"parado"
+autoplay = "parado"
 
 [node name="AttackArea" type="Node2D" parent="." unique_id=284279918]
 

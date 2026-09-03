@@ -35,11 +35,11 @@ var dash_disponivel: bool = true
 # VIDA
 # ==================================================
 
-@export var vida_maxima: float = 100.0
+const CORACOES_INICIAIS: int = 5
 
-var vida: float
+var vida: int
 
-@onready var barra_vida: ProgressBar = $"../CanvasLayer/BarraVida"
+@onready var barra_vida: HBoxContainer = $"../CanvasLayer/BarraVida"
 
 
 # ==================================================
@@ -97,15 +97,14 @@ func _ready() -> void:
 	# VIDA
 	# ==================================================
 
-	vida = vida_maxima
+	vida = CORACOES_INICIAIS
 
 
 	# ==================================================
 	# BARRA DE VIDA
 	# ==================================================
 
-	barra_vida.max_value = vida_maxima
-	barra_vida.value = vida
+	atualizar_coracoes()
 
 
 	# ==================================================
@@ -721,13 +720,13 @@ func iniciar_cooldown_dash() -> void:
 # RECEBER DANO
 # ==================================================
 
-func receber_dano(valor: float) -> void:
+func receber_dano(_valor: float = 1.0) -> void:
 
 	# ==================================================
 	# DIMINUIR VIDA
 	# ==================================================
 
-	vida -= valor
+	vida -= 1
 
 
 	# ==================================================
@@ -736,8 +735,8 @@ func receber_dano(valor: float) -> void:
 
 	vida = clamp(
 		vida,
-		0.0,
-		vida_maxima
+		0,
+		CORACOES_INICIAIS
 	)
 
 
@@ -745,13 +744,13 @@ func receber_dano(valor: float) -> void:
 	# ATUALIZAR BARRA
 	# ==================================================
 
-	barra_vida.value = vida
+	atualizar_coracoes()
 
 
 	print(
 		"Jogador recebeu ",
-		valor,
-		" de dano. Vida: ",
+		1,
+		" coração de dano. Corações: ",
 		vida
 	)
 
@@ -760,9 +759,26 @@ func receber_dano(valor: float) -> void:
 	# VERIFICAR MORTE
 	# ==================================================
 
-	if vida <= 0.0:
+	if vida <= 0:
 
 		morrer()
+
+
+func atualizar_coracoes() -> void:
+	for filho: Node in barra_vida.get_children():
+		filho.free()
+
+	for indice: int in range(CORACOES_INICIAIS):
+		var coracao := Label.new()
+		coracao.text = "♥" if indice < vida else "♡"
+		coracao.add_theme_font_size_override("font_size", 28)
+		coracao.add_theme_color_override(
+			"font_color",
+			Color("e63946") if indice < vida else Color("6c757d")
+		)
+		coracao.add_theme_color_override("font_outline_color", Color.BLACK)
+		coracao.add_theme_constant_override("outline_size", 4)
+		barra_vida.add_child(coracao)
 
 
 # ==================================================

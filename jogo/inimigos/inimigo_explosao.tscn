@@ -9,7 +9,24 @@ size = Vector2(16, 9.75)
 [sub_resource type="CircleShape2D" id="CircleShape2D_qpdv0"]
 radius = 60.133186
 
+[sub_resource type="Gradient" id="Gradient_fumaca_textura"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(1, 1, 1, 0.9, 1, 1, 1, 0.55, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_fumaca"]
+gradient = SubResource("Gradient_fumaca_textura")
+width = 48
+height = 48
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_fumaca_cor"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(0.82, 0.84, 0.86, 0.82, 0.38, 0.4, 0.43, 0.62, 0.12, 0.13, 0.15, 0)
+
 [node name="InimigoExplosao" type="CharacterBody2D" unique_id=1696728883]
+motion_mode = 1
 script = ExtResource("1_vr3oh")
 
 [node name="Icon" type="Sprite2D" parent="." unique_id=1848470569]
@@ -22,15 +39,27 @@ position = Vector2(0, 8.875)
 shape = SubResource("RectangleShape2D_qpdv0")
 
 [node name="Fumaca" type="CPUParticles2D" parent="." unique_id=222266166]
+z_index = 3
 position = Vector2(0, 3)
 emitting = false
-amount = 120
-lifetime = 1.06
+amount = 54
+lifetime = 1.8
 one_shot = true
-explosiveness = 0.71
+explosiveness = 0.88
+randomness = 0.45
+texture = SubResource("GradientTexture2D_fumaca")
 emission_shape = 1
-emission_sphere_radius = 39.41
-gravity = Vector2(0, 300)
+emission_sphere_radius = 22.0
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, -12)
+initial_velocity_min = 24.0
+initial_velocity_max = 72.0
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+scale_amount_min = 0.28
+scale_amount_max = 0.72
+color_ramp = SubResource("Gradient_fumaca_cor")
 
 [node name="raioDano" type="Polygon2D" parent="." unique_id=1338792807]
 use_parent_material = true

@@ -302,6 +302,7 @@ animations = [{
 }]
 
 [node name="jogador" type="CharacterBody2D" unique_id=1251063661 groups=["Player"]]
+motion_mode = 1
 script = ExtResource("1_c2wt1")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1681542975]

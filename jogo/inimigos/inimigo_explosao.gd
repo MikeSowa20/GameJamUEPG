@@ -15,7 +15,7 @@ extends CharacterBody2D
 @export var raio_explosao: float = 70.0
 
 # Dano causado pela explosão
-@export var dano: float = 20.0
+const DANO_AO_JOGADOR: int = 1
 
 # Tempo preparando a explosão
 @export var tempo_carregamento: float = 1.5
@@ -74,6 +74,7 @@ var carregando: bool = false
 var explodindo: bool = false
 
 var em_cooldown: bool = false
+var morrendo: bool = false
 
 
 # ==================================================
@@ -753,7 +754,7 @@ func aplicar_dano() -> void:
 
 		if jogador.has_method("receber_dano"):
 
-			jogador.receber_dano(dano)
+			jogador.receber_dano(DANO_AO_JOGADOR)
 
 	else:
 
@@ -765,6 +766,8 @@ func aplicar_dano() -> void:
 # ==================================================
 
 func receber_dano(valor: float) -> void:
+	if morrendo:
+		return
 
 	vida -= valor
 
@@ -796,9 +799,29 @@ func receber_dano(valor: float) -> void:
 # ==================================================
 
 func morrer() -> void:
+	if morrendo:
+		return
+	morrendo = true
 
 	print("Extintor morreu!")
 
 	velocity = Vector2.ZERO
+	carregando = false
+	explodindo = false
+	em_cooldown = true
+	raio_dano.visible = false
+	area_dano.set_deferred("monitoring", false)
+	set_physics_process(false)
+	$CollisionShape2D.set_deferred("disabled", true)
+	collision_dano.set_deferred("disabled", true)
+	var tween: Tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "modulate", Color(1, 1, 1, 0), 0.4)
+	tween.tween_property(self, "scale", scale * 0.15, 0.4)
+	tween.tween_property(self, "position", position + Vector2(0, -12), 0.4)
+	tween.tween_property(self, "rotation", rotation + deg_to_rad(90.0), 0.4)
+	await tween.finished
 
 	queue_free()

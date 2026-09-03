@@ -7,6 +7,7 @@
 size = Vector2(22, 19.5)
 
 [node name="Inimigo_Atirador" type="CharacterBody2D" unique_id=1943938195]
+motion_mode = 1
 script = ExtResource("1_6ojuj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=540853880]

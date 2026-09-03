@@ -43,7 +43,7 @@ var jogador: CharacterBody2D = null
 # Distância máxima para poder atacar
 @export var alcance_ataque: float = 300.0
 
-@export var dano: float = 10.0
+const DANO_AO_JOGADOR: int = 1
 
 
 # ============================================================
@@ -88,9 +88,12 @@ var jogador: CharacterBody2D = null
 
 var atacando: bool = false
 var pode_atacar: bool = true
+var morrendo: bool = false
 
 var recuando_ao_atirar: bool = false
 var chacoalhando: bool = false
+var direcao_recuo_tiro: Vector2 = Vector2.ZERO
+var recuo_restante: float = 0.0
 
 
 # ============================================================
@@ -199,7 +202,7 @@ func _process(delta: float) -> void:
 # PHYSICS PROCESS
 # ============================================================
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 
 	# ========================================================
 	# PROCURAR JOGADOR
@@ -246,7 +249,7 @@ func _physics_process(_delta: float) -> void:
 	# ========================================================
 
 	if recuando_ao_atirar:
-
+		processar_recuo_tiro(delta)
 		return
 
 
@@ -540,38 +543,8 @@ func efeito_disparo() -> void:
 
 	# O inimigo vai para trás da direção do jogador.
 
-	var direcao_recuo: Vector2 = -direcao
-
-
-	# ========================================================
-	# POSIÇÃO INICIAL
-	# ========================================================
-
-	var posicao_inicial: Vector2 = global_position
-
-	var posicao_final: Vector2 = (
-		posicao_inicial
-		+ direcao_recuo * distancia_recuo_tiro
-	)
-
-
-	# ========================================================
-	# RECUO DO INIMIGO
-	# ========================================================
-
-	var tween_recuo: Tween = create_tween()
-
-	tween_recuo.set_trans(Tween.TRANS_QUAD)
-
-	tween_recuo.set_ease(Tween.EASE_OUT)
-
-
-	tween_recuo.tween_property(
-		self,
-		"global_position",
-		posicao_final,
-		duracao_recuo_tiro
-	)
+	direcao_recuo_tiro = -direcao
+	recuo_restante = distancia_recuo_tiro
 
 
 	# ========================================================
@@ -638,7 +611,31 @@ func efeito_disparo() -> void:
 	# ========================================================
 
 	chacoalhando = false
+
+
+func processar_recuo_tiro(delta: float) -> void:
+	if recuo_restante <= 0.0 or direcao_recuo_tiro == Vector2.ZERO:
+		finalizar_recuo_tiro()
+		return
+	var duracao_segura: float = max(duracao_recuo_tiro, 0.01)
+	var velocidade_recuo: float = distancia_recuo_tiro / duracao_segura
+	var distancia_frame: float = min(velocidade_recuo * delta, recuo_restante)
+	var colisao: KinematicCollision2D = move_and_collide(
+		direcao_recuo_tiro * distancia_frame
+	)
+	if colisao != null:
+		finalizar_recuo_tiro()
+		return
+	recuo_restante -= distancia_frame
+	if recuo_restante <= 0.0:
+		finalizar_recuo_tiro()
+
+
+func finalizar_recuo_tiro() -> void:
 	recuando_ao_atirar = false
+	recuo_restante = 0.0
+	direcao_recuo_tiro = Vector2.ZERO
+	velocity = Vector2.ZERO
 
 
 # ============================================================
@@ -733,7 +730,7 @@ func atirar() -> void:
 
 		projetil.configurar(
 			direcao,
-			dano,
+			DANO_AO_JOGADOR,
 			self
 		)
 
@@ -755,7 +752,7 @@ func atirar() -> void:
 	print("================================")
 	print("PROJÉTIL DISPARADO!")
 	print("Direção: ", direcao)
-	print("Dano: ", dano)
+	print("Dano: ", DANO_AO_JOGADOR)
 	print("================================")
 
 
@@ -899,6 +896,8 @@ func animar_movimento(delta: float) -> void:
 # ============================================================
 
 func receber_dano(valor: float) -> void:
+	if morrendo:
+		return
 
 	vida -= valor
 
@@ -928,7 +927,26 @@ func receber_dano(valor: float) -> void:
 # ============================================================
 
 func morrer() -> void:
+	if morrendo:
+		return
+	morrendo = true
 
 	print("Inimigo atirador morreu!")
+	velocity = Vector2.ZERO
+	atacando = false
+	pode_atacar = false
+	recuando_ao_atirar = false
+	attack_polygon.visible = false
+	set_physics_process(false)
+	$CollisionShape2D.set_deferred("disabled", true)
+	var tween: Tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "modulate", Color(1, 1, 1, 0), 0.4)
+	tween.tween_property(self, "scale", scale * 0.15, 0.4)
+	tween.tween_property(self, "position", position + Vector2(0, -12), 0.4)
+	tween.tween_property(self, "rotation", rotation + deg_to_rad(90.0), 0.4)
+	await tween.finished
 
 	queue_free()

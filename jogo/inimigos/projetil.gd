@@ -14,7 +14,7 @@ extends Area2D
 # ==================================================
 
 var direcao: Vector2 = Vector2.ZERO
-var dano: float = 10.0
+const DANO_AO_JOGADOR: int = 1
 
 # Inimigo que criou o projétil
 var dono: Node = null
@@ -48,15 +48,14 @@ func _ready() -> void:
 
 func configurar(
 	nova_direcao: Vector2,
-	novo_dano: float,
+	_novo_dano: float,
 	novo_dono: Node = null
 ) -> void:
 
 	# Guarda a direção
 	direcao = nova_direcao.normalized()
 
-	# Guarda o dano
-	dano = novo_dano
+	# Todo projétil inimigo remove exatamente um coração.
 
 	# Guarda quem disparou
 	dono = novo_dono
@@ -103,13 +102,13 @@ func _quando_entrou_em_corpo(
 
 		print("================================")
 		print("PROJÉTIL ATINGIU O JOGADOR!")
-		print("Dano: ", dano)
+		print("Dano: ", DANO_AO_JOGADOR)
 		print("================================")
 
 		# Verifica se o jogador possui receber_dano()
 		if corpo.has_method("receber_dano"):
 
-			corpo.receber_dano(dano)
+			corpo.receber_dano(DANO_AO_JOGADOR)
 
 		# Destrói o projétil
 		queue_free()
