@@ -11,6 +11,15 @@
 [ext_resource type="Texture2D" uid="uid://crnramedlfdld" path="res://jogador/personagem/personagem_andando_e2.png" id="9_d06r4"]
 [ext_resource type="Texture2D" uid="uid://cfua6k5yyx1qr" path="res://jogador/personagem/personagem_andando_e1.png" id="10_strnc"]
 [ext_resource type="Texture2D" uid="uid://bavlr4tk1q8vk" path="res://jogador/personagem/slash.png" id="11_nwtet"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_parado_braco.png" id="12_braco_parado"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_c1_braco.png" id="13_braco_c1"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_c2_braco.png" id="14_braco_c2"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_d1_braco.png" id="15_braco_d1"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_d2_braco.png" id="16_braco_d2"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_e1_braco.png" id="17_braco_e1"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_e2_braco.png" id="18_braco_e2"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_f1_braco.png" id="19_braco_f1"]
+[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_f2_braco.png" id="20_braco_f2"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_wjtt2"]
 animations = [{
@@ -96,6 +105,31 @@ animations = [{
 }],
 "loop": 1,
 "name": &"parado",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("19_braco_f1")}, {"duration": 1.0, "texture": ExtResource("20_braco_f2")}],
+"loop": true,
+"name": &"andando_baixo_braco",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("13_braco_c1")}, {"duration": 1.0, "texture": ExtResource("14_braco_c2")}],
+"loop": true,
+"name": &"andando_cima_braco",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("15_braco_d1")}, {"duration": 1.0, "texture": ExtResource("16_braco_d2")}],
+"loop": true,
+"name": &"andando_direita_braco",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("17_braco_e1")}, {"duration": 1.0, "texture": ExtResource("18_braco_e2")}],
+"loop": true,
+"name": &"andando_esquerda_braco",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("12_braco_parado")}],
+"loop": true,
+"name": &"parado_braco",
 "speed": 5.0
 }]
 

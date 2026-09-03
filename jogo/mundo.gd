@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const EFEITOS = preload("res://efeitos_visuais.gd")
+const CENA_DISPARO_BRACO = preload("res://jogador/disparo_braco.tscn")
 
 
 # ==================================================
@@ -19,6 +20,10 @@ var ultima_direcao: Vector2 = Vector2.DOWN
 # ==================================================
 
 @onready var animacao: AnimatedSprite2D = $AnimatedSprite2D
+var braco_robotico_ativo: bool = false
+var disparo_braco_disponivel: bool = true
+@export var cooldown_disparo_braco: float = 0.4
+var botao_braco_dev: Button = null
 
 
 # ==================================================
@@ -109,6 +114,8 @@ func _ready() -> void:
 		CORACOES_INICIAIS
 	)
 	velocidade *= DificuldadeGlobal.multiplicador_velocidade_jogador
+	braco_robotico_ativo = DificuldadeGlobal.braco_robotico_ativo
+	criar_botao_braco_dev()
 
 
 	# ==================================================
@@ -129,7 +136,7 @@ func _ready() -> void:
 	# ANIMAÇÃO INICIAL
 	# ==================================================
 
-	animacao.play("parado")
+	tocar_animacao("parado")
 
 
 # ==================================================
@@ -232,7 +239,7 @@ func atualizar_animacao(direcao: Vector2) -> void:
 
 		if direcao.x > 0:
 
-			animacao.play("andando_direita")
+			tocar_animacao("andando_direita")
 
 
 		# --------------------------------------------------
@@ -241,7 +248,7 @@ func atualizar_animacao(direcao: Vector2) -> void:
 
 		else:
 
-			animacao.play("andando_esquerda")
+			tocar_animacao("andando_esquerda")
 
 
 	# ==================================================
@@ -256,7 +263,7 @@ func atualizar_animacao(direcao: Vector2) -> void:
 
 		if direcao.y > 0:
 
-			animacao.play("andando_baixo")
+			tocar_animacao("andando_baixo")
 
 
 		# --------------------------------------------------
@@ -265,7 +272,7 @@ func atualizar_animacao(direcao: Vector2) -> void:
 
 		else:
 
-			animacao.play("andando_cima")
+			tocar_animacao("andando_cima")
 
 
 # ==================================================
@@ -277,7 +284,72 @@ func atualizar_animacao_parado() -> void:
 	# A animação "parado" possui somente
 	# o personagem olhando para a tela.
 
-	animacao.play("parado")
+	tocar_animacao("parado")
+
+
+func tocar_animacao(nome_base: StringName) -> void:
+	var nome_final: StringName = nome_base
+	if braco_robotico_ativo:
+		var nome_braco := StringName(str(nome_base) + "_braco")
+		if animacao.sprite_frames.has_animation(nome_braco):
+			nome_final = nome_braco
+	animacao.play(nome_final)
+
+
+func definir_braco_robotico(ativo: bool) -> void:
+	braco_robotico_ativo = ativo
+	DificuldadeGlobal.braco_robotico_ativo = ativo
+	atualizar_texto_botao_braco()
+	var direcao_atual := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if direcao_atual == Vector2.ZERO:
+		tocar_animacao("parado")
+	else:
+		atualizar_animacao(direcao_atual)
+
+
+func criar_botao_braco_dev() -> void:
+	var canvas := get_node_or_null("../CanvasLayer")
+	if canvas == null:
+		return
+	botao_braco_dev = Button.new()
+	botao_braco_dev.position = Vector2(8, 232)
+	botao_braco_dev.custom_minimum_size = Vector2(190, 30)
+	botao_braco_dev.add_theme_font_size_override("font_size", 11)
+	botao_braco_dev.pressed.connect(
+		func() -> void: definir_braco_robotico(not braco_robotico_ativo)
+	)
+	canvas.add_child(botao_braco_dev)
+	atualizar_texto_botao_braco()
+
+
+func atualizar_texto_botao_braco() -> void:
+	if is_instance_valid(botao_braco_dev):
+		botao_braco_dev.text = "Braço robótico: %s (DEV)" % (
+			"ON" if braco_robotico_ativo else "OFF"
+		)
+
+
+func disparar_braco_robotico() -> void:
+	if not braco_robotico_ativo or not disparo_braco_disponivel or morto:
+		return
+	var direcao: Vector2 = global_position.direction_to(get_global_mouse_position())
+	if direcao == Vector2.ZERO:
+		direcao = ultima_direcao
+	var disparo := CENA_DISPARO_BRACO.instantiate() as Area2D
+	get_parent().add_child(disparo)
+	disparo.global_position = global_position + direcao.normalized() * 22.0
+	disparo.configurar(direcao, self)
+	disparo_braco_disponivel = false
+	EFEITOS.criar_clarao(
+		get_parent(),
+		disparo.global_position,
+		Color(0.45, 0.9, 1.0, 1.0),
+		10.0,
+		0.13
+	)
+	await get_tree().create_timer(cooldown_disparo_braco).timeout
+	if is_instance_valid(self):
+		disparo_braco_disponivel = true
 
 
 # ==================================================
@@ -707,7 +779,7 @@ func iniciar_dash() -> void:
 	# ANIMAÇÃO
 	# ==================================================
 
-	animacao.play("parado")
+	tocar_animacao("parado")
 
 
 	# ==================================================
@@ -852,7 +924,7 @@ func morrer() -> void:
 
 	# Animação parado
 
-	animacao.play("parado")
+	tocar_animacao("parado")
 	set_physics_process(false)
 	$CollisionShape2D.set_deferred("disabled", true)
 
@@ -892,6 +964,12 @@ func _input(event: InputEvent) -> void:
 			if mouse_event.pressed:
 
 				atacar()
+
+		elif mouse_event.button_index == MOUSE_BUTTON_RIGHT:
+
+			if mouse_event.pressed:
+
+				disparar_braco_robotico()
 
 
 	# ==================================================

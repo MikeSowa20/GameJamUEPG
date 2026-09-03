@@ -11,6 +11,7 @@ var ultima_cena: String = ""
 var vida_jogador: int = 5
 var vida_inicializada: bool = false
 var multiplicador_velocidade_jogador: float = 1.0
+var braco_robotico_ativo: bool = false
 var escolha_aberta: bool = false
 var tela_escolha: Control = null
 
@@ -115,6 +116,7 @@ func iniciar_nova_partida() -> void:
 	vida_jogador = 5
 	vida_inicializada = false
 	multiplicador_velocidade_jogador = 1.0
+	braco_robotico_ativo = false
 	ultima_cena = ""
 	atualizar_hud()
 
