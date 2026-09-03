@@ -183,17 +183,13 @@ position = Vector2(82, 283)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=848189495]
 
-[node name="BarraVida" type="ProgressBar" parent="CanvasLayer" unique_id=1289373906]
-modulate = Color(0, 1, 0, 1)
-self_modulate = Color(0, 1, 0, 1)
+[node name="BarraVida" type="HBoxContainer" parent="CanvasLayer" unique_id=1289373906]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -175.0
-offset_top = 9.0
-offset_right = -4.0
-offset_bottom = 36.0
+offset_left = -205.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = 45.0
 grow_horizontal = 0
-theme = SubResource("Theme_lgngo")
-theme_override_colors/font_color = Color(0.007843138, 1, 0.019607844, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/separation = 5
