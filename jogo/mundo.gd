@@ -5,15 +5,15 @@ extends CharacterBody2D
 # MOVIMENTO
 # ==================================================
 
-@export var velocidade: float = 120.0
+@export var velocidade: float = 80.0
 
-# Guarda a última direção em que o personagem estava andando.
-# É utilizada pelo ataque e pelo dash.
+# Última direção em que o jogador estava andando.
+# Usada pelo dash.
 var ultima_direcao: Vector2 = Vector2.DOWN
 
 
 # ==================================================
-# ANIMAÇÃO
+# ANIMAÇÃO DO PERSONAGEM
 # ==================================================
 
 @onready var animacao: AnimatedSprite2D = $AnimatedSprite2D
@@ -23,13 +23,8 @@ var ultima_direcao: Vector2 = Vector2.DOWN
 # DASH
 # ==================================================
 
-# Distância total do dash
 @export var distancia_dash: float = 70.0
-
-# Velocidade do dash
 @export var velocidade_dash: float = 500.0
-
-# Tempo de espera entre os dashes
 @export var cooldown_dash: float = 1.5
 
 var dashing: bool = false
@@ -51,16 +46,37 @@ var vida: float
 # ATAQUE
 # ==================================================
 
+# Distância máxima do ataque
 @export var alcance_ataque: float = 60.0
-@export var angulo_ataque: float = 160.0
-@export var dano: float = 10.0
-@export var duracao_ataque: float = 0.35
 
+# Ângulo total do ataque
+@export var angulo_ataque: float = 160.0
+
+# Dano causado
+@export var dano: float = 10.0
+
+# Duração do ataque
+@export var duracao_ataque: float = 0.5
+
+# Indica se está atacando
 var atacando: bool = false
 
+# Guarda os inimigos que já foram atingidos
+# durante o ataque atual
 var inimigos_atingidos: Array[Node] = []
 
+# Direção do ataque.
+# Essa direção é definida pelo mouse no momento
+# em que o jogador clica.
+var direcao_ataque: Vector2 = Vector2.RIGHT
+
+
+# ==================================================
+# ATAQUE
+# ==================================================
+
 @onready var attack_pivot: Node2D = $AttackPivot
+
 @onready var golpe: AnimatedSprite2D = $AttackPivot/Golpe
 
 
@@ -70,38 +86,38 @@ var inimigos_atingidos: Array[Node] = []
 
 func _ready() -> void:
 
-	# --------------------------------------------------
-	# Grupo do jogador
-	# --------------------------------------------------
+	# ==================================================
+	# GRUPO DO JOGADOR
+	# ==================================================
 
 	add_to_group("jogador")
 
 
-	# --------------------------------------------------
-	# Vida
-	# --------------------------------------------------
+	# ==================================================
+	# VIDA
+	# ==================================================
 
 	vida = vida_maxima
 
 
-	# --------------------------------------------------
-	# Barra de vida
-	# --------------------------------------------------
+	# ==================================================
+	# BARRA DE VIDA
+	# ==================================================
 
 	barra_vida.max_value = vida_maxima
 	barra_vida.value = vida
 
 
-	# --------------------------------------------------
-	# Golpe
-	# --------------------------------------------------
+	# ==================================================
+	# GOLPE
+	# ==================================================
 
 	golpe.visible = false
 
 
-	# --------------------------------------------------
-	# Animação inicial
-	# --------------------------------------------------
+	# ==================================================
+	# ANIMAÇÃO INICIAL
+	# ==================================================
 
 	animacao.play("parado")
 
@@ -122,7 +138,7 @@ func _physics_process(_delta: float) -> void:
 
 
 	# ==================================================
-	# PEGAR DIREÇÃO DO JOGADOR
+	# PEGAR DIREÇÃO DO MOVIMENTO
 	# ==================================================
 
 	var direcao: Vector2 = Input.get_vector(
@@ -134,54 +150,53 @@ func _physics_process(_delta: float) -> void:
 
 
 	# ==================================================
-	# MOVIMENTO NORMAL
+	# MOVIMENTO
 	# ==================================================
 
-	if not atacando:
+	# O jogador pode continuar andando
+	# mesmo durante o ataque.
 
-		velocity = direcao * velocidade
+	velocity = direcao * velocidade
 
 
-		# --------------------------------------------------
-		# ESTÁ ANDANDO
-		# --------------------------------------------------
+	# ==================================================
+	# ATUALIZAR DIREÇÃO E ANIMAÇÃO
+	# ==================================================
 
-		if direcao != Vector2.ZERO:
+	if direcao != Vector2.ZERO:
 
-			# Guarda a última direção
-			ultima_direcao = direcao.normalized()
+		# Guarda a última direção
+		ultima_direcao = direcao.normalized()
 
-			# Atualiza a animação
+
+		# Não troca para animação de caminhada
+		# enquanto estiver atacando.
+		#
+		# O golpe possui seu próprio AnimatedSprite2D.
+
+		if not atacando:
+
 			atualizar_animacao(direcao)
 
 
-		# --------------------------------------------------
-		# ESTÁ PARADO
-		# --------------------------------------------------
+	else:
 
-		else:
+		# Só mostra "parado" se não estiver atacando.
+
+		if not atacando:
 
 			atualizar_animacao_parado()
 
 
 	# ==================================================
-	# DURANTE ATAQUE
-	# ==================================================
-
-	else:
-
-		velocity = Vector2.ZERO
-
-
-	# ==================================================
-	# MOVIMENTO
+	# MOVIMENTO COM COLISÃO
 	# ==================================================
 
 	move_and_slide()
 
 
 	# ==================================================
-	# ATAQUE
+	# VERIFICAR INIMIGOS
 	# ==================================================
 
 	if atacando:
@@ -190,7 +205,7 @@ func _physics_process(_delta: float) -> void:
 
 
 # ==================================================
-# ATUALIZAR ANIMAÇÃO DE MOVIMENTO
+# ANIMAÇÃO DE MOVIMENTO
 # ==================================================
 
 func atualizar_animacao(direcao: Vector2) -> void:
@@ -249,154 +264,10 @@ func atualizar_animacao(direcao: Vector2) -> void:
 
 func atualizar_animacao_parado() -> void:
 
-	# O personagem sempre olha para a tela
-	# quando está parado.
+	# A animação "parado" possui somente
+	# o personagem olhando para a tela.
 
 	animacao.play("parado")
-
-
-# ==================================================
-# DASH
-# ==================================================
-
-func iniciar_dash() -> void:
-
-	# --------------------------------------------------
-	# Verifica se pode dar dash
-	# --------------------------------------------------
-
-	if dashing:
-
-		return
-
-
-	if atacando:
-
-		return
-
-
-	if not dash_disponivel:
-
-		return
-
-
-	# --------------------------------------------------
-	# Inicia dash
-	# --------------------------------------------------
-
-	dashing = true
-
-	dash_disponivel = false
-
-	velocity = Vector2.ZERO
-
-
-	# ==================================================
-	# DIREÇÃO DO DASH
-	# ==================================================
-
-	# O dash usa a última direção em que o jogador
-	# estava andando.
-
-	var direcao_dash: Vector2 = ultima_direcao.normalized()
-
-
-	# ==================================================
-	# DISTÂNCIA PERCORRIDA
-	# ==================================================
-
-	var distancia_percorrida: float = 0.0
-
-
-	# ==================================================
-	# MOVIMENTO DO DASH
-	# ==================================================
-
-	while distancia_percorrida < distancia_dash:
-
-		# Calcula o movimento deste frame
-		var movimento: Vector2 = (
-			direcao_dash
-			* velocidade_dash
-			* get_process_delta_time()
-		)
-
-
-		# Calcula quanto ainda falta
-		var restante: float = (
-			distancia_dash
-			- distancia_percorrida
-		)
-
-
-		# Evita ultrapassar a distância
-		if movimento.length() > restante:
-
-			movimento = direcao_dash * restante
-
-
-		# --------------------------------------------------
-		# Move com colisão
-		# --------------------------------------------------
-
-		var colisao: KinematicCollision2D = move_and_collide(
-			movimento
-		)
-
-
-		# Atualiza distância
-		distancia_percorrida += movimento.length()
-
-
-		# --------------------------------------------------
-		# Bateu em alguma coisa
-		# --------------------------------------------------
-
-		if colisao != null:
-
-			print("Dash bateu em uma parede!")
-
-			break
-
-
-		await get_tree().process_frame
-
-
-	# ==================================================
-	# FINALIZAR DASH
-	# ==================================================
-
-	velocity = Vector2.ZERO
-
-	dashing = false
-
-
-	# Volta para o sprite parado
-	animacao.play("parado")
-
-
-	# ==================================================
-	# COOLDOWN
-	# ==================================================
-
-	iniciar_cooldown_dash()
-
-
-# ==================================================
-# COOLDOWN DO DASH
-# ==================================================
-
-func iniciar_cooldown_dash() -> void:
-
-	await get_tree().create_timer(
-		cooldown_dash
-	).timeout
-
-
-	dash_disponivel = true
-
-
-	print("Dash disponível novamente!")
 
 
 # ==================================================
@@ -405,31 +276,69 @@ func iniciar_cooldown_dash() -> void:
 
 func atacar() -> void:
 
-	# --------------------------------------------------
-	# Não pode atacar durante dash
-	# --------------------------------------------------
+	# ==================================================
+	# VERIFICAÇÕES
+	# ==================================================
 
+	# Não pode atacar durante o dash
 	if dashing:
 
 		return
 
 
-	# --------------------------------------------------
-	# Não pode atacar se já estiver atacando
-	# --------------------------------------------------
-
+	# Não pode iniciar outro ataque
 	if atacando:
 
 		return
 
 
-	# --------------------------------------------------
-	# Inicia ataque
-	# --------------------------------------------------
+	# ==================================================
+	# PEGAR POSIÇÃO DO MOUSE
+	# ==================================================
+
+	var mouse_posicao: Vector2 = get_global_mouse_position()
+
+
+	# ==================================================
+	# CALCULAR DIREÇÃO DO ATAQUE
+	# ==================================================
+
+	# Calcula a direção GLOBAL do jogador até o mouse.
+
+	direcao_ataque = global_position.direction_to(
+		mouse_posicao
+	)
+
+
+	# Caso o mouse esteja exatamente sobre o jogador
+	if direcao_ataque == Vector2.ZERO:
+
+		direcao_ataque = Vector2.RIGHT
+
+
+	# ==================================================
+	# INICIAR ATAQUE
+	# ==================================================
 
 	atacando = true
 
 	inimigos_atingidos.clear()
+
+
+	# ==================================================
+	# DIRECIONAR ATTACK PIVOT
+	# ==================================================
+
+	# IMPORTANTE:
+	#
+	# O AttackPivot é filho do jogador.
+	#
+	# Por isso usamos GLOBAL ROTATION.
+	#
+	# Dessa forma o golpe aponta para o mouse
+	# independentemente da rotação do jogador.
+
+	attack_pivot.global_rotation = direcao_ataque.angle()
 
 
 	# ==================================================
@@ -439,39 +348,47 @@ func atacar() -> void:
 	golpe.visible = true
 
 
-	# Coloca o golpe no início do arco
-	attack_pivot.rotation_degrees = (
-		-angulo_ataque / 2.0
-	)
-
-
 	# ==================================================
-	# ANIMAÇÃO DO GOLPE
+	# INICIAR ANIMAÇÃO DO GOLPE
 	# ==================================================
 
 	if golpe.sprite_frames != null:
 
 		if golpe.sprite_frames.has_animation("golpe"):
 
+			# Garante que começa do primeiro frame
+
+			golpe.stop()
+
+			golpe.frame = 0
+
 			golpe.play("golpe")
 
+		else:
+
+			print(
+				"ERRO: A animação 'golpe' não existe."
+			)
+
+	else:
+
+		print(
+			"ERRO: O Golpe não possui SpriteFrames."
+		)
+
 
 	# ==================================================
-	# MOVIMENTO DO GOLPE
+	# DURANTE O ATAQUE
 	# ==================================================
 
-	var tween: Tween = create_tween()
+	# O jogador NÃO para.
+	#
+	# O _physics_process continua executando
+	# normalmente e o personagem pode andar.
 
-
-	tween.tween_property(
-		attack_pivot,
-		"rotation_degrees",
-		angulo_ataque / 2.0,
+	await get_tree().create_timer(
 		duracao_ataque
-	)
-
-
-	await tween.finished
+	).timeout
 
 
 	# ==================================================
@@ -482,13 +399,46 @@ func atacar() -> void:
 
 	golpe.visible = false
 
-	attack_pivot.rotation_degrees = 0.0
+
+	# ==================================================
+	# RESET DO ATTACK PIVOT
+	# ==================================================
+
+	# O jogador pode ter mudado de direção
+	# enquanto atacava.
+	#
+	# Portanto o AttackPivot volta a acompanhar
+	# a rotação atual do jogador.
+
+	attack_pivot.global_rotation = global_rotation
+
+
+	# ==================================================
+	# FINALIZAR ESTADO DE ATAQUE
+	# ==================================================
 
 	atacando = false
 
 
-	# Volta para o personagem parado
-	animacao.play("parado")
+	# ==================================================
+	# ATUALIZAR ANIMAÇÃO
+	# ==================================================
+
+	var direcao_atual: Vector2 = Input.get_vector(
+		"ui_left",
+		"ui_right",
+		"ui_up",
+		"ui_down"
+	)
+
+
+	if direcao_atual != Vector2.ZERO:
+
+		atualizar_animacao(direcao_atual)
+
+	else:
+
+		atualizar_animacao_parado()
 
 
 # ==================================================
@@ -497,10 +447,18 @@ func atacar() -> void:
 
 func verificar_inimigos() -> void:
 
-	var inimigos: Array[Node] = get_tree().get_nodes_in_group(
-		"inimigos"
+	# ==================================================
+	# PEGAR INIMIGOS
+	# ==================================================
+
+	var inimigos: Array[Node] = (
+		get_tree().get_nodes_in_group("inimigos")
 	)
 
+
+	# ==================================================
+	# PERCORRER INIMIGOS
+	# ==================================================
 
 	for inimigo: Node in inimigos:
 
@@ -540,10 +498,14 @@ func verificar_inimigos() -> void:
 		# DISTÂNCIA
 		# ==================================================
 
-		var distancia: float = global_position.distance_to(
-			alvo.global_position
+		var distancia: float = (
+			global_position.distance_to(
+				alvo.global_position
+			)
 		)
 
+
+		# Se estiver longe demais, ignora.
 
 		if distancia > alcance_ataque:
 
@@ -551,14 +513,8 @@ func verificar_inimigos() -> void:
 
 
 		# ==================================================
-		# DIREÇÃO DO ATAQUE
+		# DIREÇÃO DO INIMIGO
 		# ==================================================
-
-		var direcao_ataque: Vector2 = (
-			ultima_direcao
-			.rotated(attack_pivot.rotation)
-		)
-
 
 		var direcao_inimigo: Vector2 = (
 			global_position.direction_to(
@@ -566,6 +522,13 @@ func verificar_inimigos() -> void:
 			)
 		)
 
+
+		# ==================================================
+		# ÂNGULO DO ATAQUE
+		# ==================================================
+
+		# Usa a direção que foi capturada
+		# quando o jogador clicou.
 
 		var angulo: float = abs(
 			direcao_ataque.angle_to(
@@ -578,16 +541,180 @@ func verificar_inimigos() -> void:
 		# VERIFICAR ARCO
 		# ==================================================
 
-		if angulo <= deg_to_rad(40.0):
+		if angulo <= deg_to_rad(
+			angulo_ataque / 2.0
+		):
 
-			# Marca como atingido
+			# Marca o inimigo como atingido
+
 			inimigos_atingidos.append(inimigo)
 
 
 			# Causa dano
+
 			if alvo.has_method("receber_dano"):
 
 				alvo.receber_dano(dano)
+
+
+# ==================================================
+# DASH
+# ==================================================
+
+func iniciar_dash() -> void:
+
+	# ==================================================
+	# VERIFICAÇÕES
+	# ==================================================
+
+	if dashing:
+
+		return
+
+
+	if atacando:
+
+		return
+
+
+	if not dash_disponivel:
+
+		return
+
+
+	# ==================================================
+	# INICIAR DASH
+	# ==================================================
+
+	dashing = true
+
+	dash_disponivel = false
+
+	velocity = Vector2.ZERO
+
+
+	# ==================================================
+	# DIREÇÃO DO DASH
+	# ==================================================
+
+	var direcao_dash: Vector2 = (
+		ultima_direcao.normalized()
+	)
+
+
+	# ==================================================
+	# DISTÂNCIA PERCORRIDA
+	# ==================================================
+
+	var distancia_percorrida: float = 0.0
+
+
+	# ==================================================
+	# MOVIMENTO DO DASH
+	# ==================================================
+
+	while distancia_percorrida < distancia_dash:
+
+		# --------------------------------------------------
+		# Movimento deste frame
+		# --------------------------------------------------
+
+		var movimento: Vector2 = (
+			direcao_dash
+			* velocidade_dash
+			* get_process_delta_time()
+		)
+
+
+		# --------------------------------------------------
+		# Distância restante
+		# --------------------------------------------------
+
+		var restante: float = (
+			distancia_dash
+			- distancia_percorrida
+		)
+
+
+		# --------------------------------------------------
+		# Impede ultrapassar a distância
+		# --------------------------------------------------
+
+		if movimento.length() > restante:
+
+			movimento = direcao_dash * restante
+
+
+		# ==================================================
+		# MOVIMENTO COM COLISÃO
+		# ==================================================
+
+		var colisao: KinematicCollision2D = (
+			move_and_collide(movimento)
+		)
+
+
+		# Atualiza distância percorrida
+
+		distancia_percorrida += movimento.length()
+
+
+		# ==================================================
+		# COLISÃO COM PAREDE
+		# ==================================================
+
+		if colisao != null:
+
+			print(
+				"Dash bateu em uma parede!"
+			)
+
+			break
+
+
+		await get_tree().process_frame
+
+
+	# ==================================================
+	# FINALIZAR DASH
+	# ==================================================
+
+	velocity = Vector2.ZERO
+
+	dashing = false
+
+
+	# ==================================================
+	# ANIMAÇÃO
+	# ==================================================
+
+	animacao.play("parado")
+
+
+	# ==================================================
+	# COOLDOWN
+	# ==================================================
+
+	iniciar_cooldown_dash()
+
+
+# ==================================================
+# COOLDOWN DO DASH
+# ==================================================
+
+func iniciar_cooldown_dash() -> void:
+
+	await get_tree().create_timer(
+		cooldown_dash
+	).timeout
+
+
+	dash_disponivel = true
+
+
+	print(
+		"Dash disponível novamente!"
+	)
 
 
 # ==================================================
@@ -596,8 +723,16 @@ func verificar_inimigos() -> void:
 
 func receber_dano(valor: float) -> void:
 
+	# ==================================================
+	# DIMINUIR VIDA
+	# ==================================================
+
 	vida -= valor
 
+
+	# ==================================================
+	# LIMITAR VIDA
+	# ==================================================
 
 	vida = clamp(
 		vida,
@@ -606,7 +741,10 @@ func receber_dano(valor: float) -> void:
 	)
 
 
-	# Atualiza barra
+	# ==================================================
+	# ATUALIZAR BARRA
+	# ==================================================
+
 	barra_vida.value = vida
 
 
@@ -618,7 +756,10 @@ func receber_dano(valor: float) -> void:
 	)
 
 
-	# Verifica morte
+	# ==================================================
+	# VERIFICAR MORTE
+	# ==================================================
+
 	if vida <= 0.0:
 
 		morrer()
@@ -630,7 +771,9 @@ func receber_dano(valor: float) -> void:
 
 func morrer() -> void:
 
-	print("Jogador morreu!")
+	print(
+		"Jogador morreu!"
+	)
 
 
 	velocity = Vector2.ZERO
@@ -639,9 +782,14 @@ func morrer() -> void:
 
 	dashing = false
 
+
+	# Esconde o golpe
+
 	golpe.visible = false
 
-	# Mantém o personagem parado
+
+	# Animação parado
+
 	animacao.play("parado")
 
 
@@ -652,7 +800,7 @@ func morrer() -> void:
 func _input(event: InputEvent) -> void:
 
 	# ==================================================
-	# ATAQUE
+	# ATAQUE - BOTÃO ESQUERDO
 	# ==================================================
 
 	if event is InputEventMouseButton:
@@ -670,7 +818,7 @@ func _input(event: InputEvent) -> void:
 
 
 	# ==================================================
-	# DASH
+	# DASH - ESPAÇO
 	# ==================================================
 
 	if event is InputEventKey:

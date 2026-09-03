@@ -5,7 +5,7 @@ extends Area2D
 # CONFIGURAÇÕES
 # ==================================================
 
-@export var velocidade: float = 350.0
+@export var velocidade: float = 250.0
 @export var tempo_vida: float = 5.0
 
 

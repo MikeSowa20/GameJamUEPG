@@ -1,21 +1,22 @@
 [gd_scene format=3 uid="uid://d2m7ch8ssyusu"]
 
 [ext_resource type="Script" uid="uid://bhl53ycb02i2j" path="res://inimigos/inimigo_atirador.gd" id="1_6ojuj"]
-[ext_resource type="Texture2D" uid="uid://b5q8dqqrh53e6" path="res://icon.svg" id="1_kiius"]
+[ext_resource type="Texture2D" uid="uid://bofga4s7dh8y1" path="res://inimigos/impressora.png" id="2_6ojuj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qpdv0"]
-size = Vector2(22, 24)
+size = Vector2(22, 19.5)
 
 [node name="Inimigo_Atirador" type="CharacterBody2D" unique_id=1943938195]
 script = ExtResource("1_6ojuj")
 
-[node name="Icon" type="Sprite2D" parent="." unique_id=479404341]
-position = Vector2(1.249999, 1.750001)
-scale = Vector2(0.19140624, 0.19921875)
-texture = ExtResource("1_kiius")
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=540853880]
+position = Vector2(9.313226e-10, 1)
+rotation = 0.018457413
+scale = Vector2(0.0784712, 0.08231706)
+texture = ExtResource("2_6ojuj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=182099171]
-position = Vector2(1, 9.536743e-07)
+position = Vector2(0, 1.75)
 shape = SubResource("RectangleShape2D_qpdv0")
 
 [node name="AttackArea" type="Node2D" parent="." unique_id=1418424856]
