@@ -1,34 +1,22 @@
 [gd_scene format=3 uid="uid://b1ibb7wdyqey7"]
 
 [ext_resource type="Script" uid="uid://we46hjnj3j0l" path="res://porta.gd" id="1_setqv"]
-[ext_resource type="Texture2D" uid="uid://rqrsbfwkgdnu" path="res://attack/image-removebg-preview (5).png" id="2_syx3q"]
+[ext_resource type="Texture2D" uid="uid://te2pvn2eo2wy" path="res://elevador-fechado.png" id="2_setqv"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3xd07"]
-size = Vector2(24, 23)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x0b65"]
+size = Vector2(52.91135, 15.951544)
 
 [node name="Porta" type="Area2D" unique_id=1293365166]
 script = ExtResource("1_setqv")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1237410456]
-position = Vector2(2.0000002, 3.0000002)
-scale = Vector2(0.13653849, 0.13392858)
-texture = ExtResource("2_syx3q")
+position = Vector2(15.000001, -28)
+scale = Vector2(0.87788457, 0.8323951)
+texture = ExtResource("2_setqv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1847650762]
-position = Vector2(2, 1.5)
-shape = SubResource("RectangleShape2D_3xd07")
-
-[node name="TextoEstado" type="Label" parent="."]
-z_index = 5
-offset_left = -35.0
-offset_top = -27.0
-offset_right = 39.0
-offset_bottom = -3.0
-theme_override_colors/font_color = Color(1, 0.35, 0.3, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 9
-text = "BLOQUEADA"
-horizontal_alignment = 1
+position = Vector2(15.986686, -6.9338617)
+rotation = 0.44680429
+shape = SubResource("RectangleShape2D_x0b65")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

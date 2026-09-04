@@ -6,11 +6,13 @@ var trocando_sala: bool = false
 var bloqueada: bool = true
 
 @onready var sprite: Sprite2D = $Sprite2D
-@onready var texto_estado: Label = $TextoEstado
 
+var textura_bloqueada = preload("res://elevador-fechado.png")
+var textura_aberta = preload("res://elevador-aberto.png")
 
 func _ready() -> void:
 	monitoring = false
+	sprite.texture = textura_bloqueada
 	sprite.modulate = Color(0.45, 0.5, 0.58, 0.8)
 	await get_tree().process_frame
 	atualizar_estado_porta()
@@ -29,16 +31,14 @@ func atualizar_estado_porta() -> void:
 
 	if restantes <= 0:
 		abrir_porta()
-	else:
-		texto_estado.text = "BLOQUEADA\n%d inimigos" % restantes
 
 
 func abrir_porta() -> void:
 	if not bloqueada:
 		return
 	bloqueada = false
-	texto_estado.text = "ABERTA"
-	texto_estado.add_theme_color_override("font_color", Color("72f1b8"))
+	sprite.texture = textura_aberta
+	sprite.modulate = Color.WHITE
 	set_deferred("monitoring", true)
 	var tween := create_tween()
 	tween.set_parallel(true)
