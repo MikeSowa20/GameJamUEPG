@@ -583,9 +583,9 @@ tile_map_data = PackedByteArray("AAAAAAIAAwABAAIAAAAAAAMAAwABAAIAAAABAAQAAwABAAI
 tile_set = SubResource("TileSet_3xd07")
 
 [node name="Porta" parent="." unique_id=1293365166 instance=ExtResource("2_26wao")]
-z_index = 1
+z_index = 4
 y_sort_enabled = true
-position = Vector2(81, 301)
+position = Vector2(178, 49)
 
 [node name="paredeDlayer" parent="." unique_id=16809371 instance=ExtResource("2_rimo8")]
 position = Vector2(18, 6)
@@ -604,7 +604,7 @@ collision_enabled = false
 [node name="jogador" parent="." unique_id=1251063661 instance=ExtResource("3_qb1t5")]
 z_index = 1
 y_sort_enabled = true
-position = Vector2(80, 235)
+position = Vector2(61, 242)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=848189495]
 

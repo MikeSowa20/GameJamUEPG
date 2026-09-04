@@ -11,24 +11,25 @@
 [ext_resource type="Texture2D" uid="uid://crnramedlfdld" path="res://jogador/personagem/personagem_andando_e2.png" id="9_d06r4"]
 [ext_resource type="Texture2D" uid="uid://cfua6k5yyx1qr" path="res://jogador/personagem/personagem_andando_e1.png" id="10_strnc"]
 [ext_resource type="Texture2D" uid="uid://bavlr4tk1q8vk" path="res://jogador/personagem/slash.png" id="11_nwtet"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_parado_braco.png" id="12_braco_parado"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_c1_braco.png" id="13_braco_c1"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_c2_braco.png" id="14_braco_c2"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_d1_braco.png" id="15_braco_d1"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_d2_braco.png" id="16_braco_d2"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_e1_braco.png" id="17_braco_e1"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_e2_braco.png" id="18_braco_e2"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_f1_braco.png" id="19_braco_f1"]
-[ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_f2_braco.png" id="20_braco_f2"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_parado_perna.png" id="21_perna_parado"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_c1_perna.png" id="22_perna_c1"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_c2_perna.png" id="23_perna_c2"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_d1_perna.png" id="24_perna_d1"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_d2_perna.png" id="25_perna_d2"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_e1_perna.png" id="26_perna_e1"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_e2_perna.png" id="27_perna_e2"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_f1_perna.png" id="28_perna_f1"]
-[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_f2_perna.png" id="29_perna_f2"]
+[ext_resource type="Texture2D" uid="uid://b2mvnby33rvoq" path="res://jogador/personagemBraco/personagem_parado_braco.png" id="12_braco_parado"]
+[ext_resource type="Texture2D" uid="uid://vjby7i3wuu7j" path="res://jogador/personagemBraco/personagem_andando_c1_braco.png" id="13_braco_c1"]
+[ext_resource type="Texture2D" uid="uid://tnavu0nt0c2s" path="res://jogador/personagemBraco/personagem_andando_c2_braco.png" id="14_braco_c2"]
+[ext_resource type="Texture2D" uid="uid://b112kpvf88kdv" path="res://jogador/personagemBraco/personagem_andando_d1_braco.png" id="15_braco_d1"]
+[ext_resource type="Texture2D" uid="uid://bgvq80owdgi3f" path="res://jogador/personagemBraco/personagem_andando_d2_braco.png" id="16_braco_d2"]
+[ext_resource type="Texture2D" uid="uid://ck7iaybkll76c" path="res://jogador/personagemBraco/personagem_andando_e1_braco.png" id="17_braco_e1"]
+[ext_resource type="Texture2D" uid="uid://clkijl2nttmq1" path="res://jogador/personagemBraco/personagem_andando_e2_braco.png" id="18_braco_e2"]
+[ext_resource type="Texture2D" uid="uid://b1dxp34kdh6m1" path="res://jogador/personagemBraco/personagem_andando_f1_braco.png" id="19_braco_f1"]
+[ext_resource type="Texture2D" uid="uid://daae8s5g8j5dh" path="res://jogador/personagemBraco/personagem_andando_f2_braco.png" id="20_braco_f2"]
+[ext_resource type="Texture2D" uid="uid://bau2xece674kd" path="res://jogador/personagem perna/personagem_parado_perna.png" id="21_perna_parado"]
+[ext_resource type="Texture2D" uid="uid://uwj68jt7sbi8" path="res://jogador/personagem perna/personagem_andando_c1_perna.png" id="22_perna_c1"]
+[ext_resource type="Texture2D" uid="uid://dccwjfu8fo1aa" path="res://jogador/personagem perna/personagem_andando_c2_perna.png" id="23_perna_c2"]
+[ext_resource type="Texture2D" uid="uid://calj5q43hjuww" path="res://jogador/personagem perna/personagem_andando_d1_perna.png" id="24_perna_d1"]
+[ext_resource type="Texture2D" uid="uid://rd8i8exhs406" path="res://jogador/personagem perna/personagem_andando_d2_perna.png" id="25_perna_d2"]
+[ext_resource type="Texture2D" uid="uid://ddgb70d7dkecm" path="res://jogador/personagem perna/personagem_andando_e1_perna.png" id="26_perna_e1"]
+[ext_resource type="Texture2D" uid="uid://cdkjy2i52ah6j" path="res://jogador/personagem perna/personagem_andando_e2_perna.png" id="27_perna_e2"]
+[ext_resource type="Texture2D" uid="uid://djqv7uh0du4mu" path="res://jogador/personagem perna/personagem_andando_f1_perna.png" id="28_perna_f1"]
+[ext_resource type="Texture2D" uid="uid://cniv3gtxdtk7v" path="res://jogador/personagem perna/personagem_andando_f2_perna.png" id="29_perna_f2"]
+[ext_resource type="Texture2D" uid="uid://dfh02c72ok1ti" path="res://jogador/personagem/pixil-frame-0 (4).png" id="30_d06r4"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_wjtt2"]
 animations = [{
@@ -45,6 +46,28 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("19_braco_f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_braco_f2")
+}],
+"loop": 1,
+"name": &"andando_baixo_braco",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("28_perna_f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_perna_f2")
+}],
+"loop": 1,
+"name": &"andando_baixo_perna",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("3_8l7fj")
 }, {
 "duration": 1.0,
@@ -52,6 +75,28 @@ animations = [{
 }],
 "loop": 1,
 "name": &"andando_cima",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_braco_c1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_braco_c2")
+}],
+"loop": 1,
+"name": &"andando_cima_braco",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("22_perna_c1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_perna_c2")
+}],
+"loop": 1,
+"name": &"andando_cima_perna",
 "speed": 5.0
 }, {
 "frames": [{
@@ -67,6 +112,28 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("15_braco_d1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_braco_d2")
+}],
+"loop": 1,
+"name": &"andando_direita_braco",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("24_perna_d1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_perna_d2")
+}],
+"loop": 1,
+"name": &"andando_direita_perna",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("10_strnc")
 }, {
 "duration": 1.0,
@@ -74,6 +141,28 @@ animations = [{
 }],
 "loop": 1,
 "name": &"andando_esquerda",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_braco_e1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_braco_e2")
+}],
+"loop": 1,
+"name": &"andando_esquerda_braco",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("26_perna_e1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_perna_e2")
+}],
+"loop": 1,
+"name": &"andando_esquerda_perna",
 "speed": 5.0
 }, {
 "frames": [{
@@ -116,53 +205,19 @@ animations = [{
 "name": &"parado",
 "speed": 5.0
 }, {
-"frames": [{"duration": 1.0, "texture": ExtResource("19_braco_f1")}, {"duration": 1.0, "texture": ExtResource("20_braco_f2")}],
-"loop": true,
-"name": &"andando_baixo_braco",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("13_braco_c1")}, {"duration": 1.0, "texture": ExtResource("14_braco_c2")}],
-"loop": true,
-"name": &"andando_cima_braco",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("15_braco_d1")}, {"duration": 1.0, "texture": ExtResource("16_braco_d2")}],
-"loop": true,
-"name": &"andando_direita_braco",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("17_braco_e1")}, {"duration": 1.0, "texture": ExtResource("18_braco_e2")}],
-"loop": true,
-"name": &"andando_esquerda_braco",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("12_braco_parado")}],
-"loop": true,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_braco_parado")
+}],
+"loop": 1,
 "name": &"parado_braco",
 "speed": 5.0
 }, {
-"frames": [{"duration": 1.0, "texture": ExtResource("28_perna_f1")}, {"duration": 1.0, "texture": ExtResource("29_perna_f2")}],
-"loop": true,
-"name": &"andando_baixo_perna",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("22_perna_c1")}, {"duration": 1.0, "texture": ExtResource("23_perna_c2")}],
-"loop": true,
-"name": &"andando_cima_perna",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("24_perna_d1")}, {"duration": 1.0, "texture": ExtResource("25_perna_d2")}],
-"loop": true,
-"name": &"andando_direita_perna",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("26_perna_e1")}, {"duration": 1.0, "texture": ExtResource("27_perna_e2")}],
-"loop": true,
-"name": &"andando_esquerda_perna",
-"speed": 5.0
-}, {
-"frames": [{"duration": 1.0, "texture": ExtResource("21_perna_parado")}],
-"loop": true,
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("21_perna_parado")
+}],
+"loop": 1,
 "name": &"parado_perna",
 "speed": 5.0
 }]
@@ -206,6 +261,42 @@ region = Rect2(448, 0, 64, 64)
 atlas = ExtResource("11_nwtet")
 region = Rect2(512, 0, 64, 64)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_strnc"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0nh5d"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tudfi"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rjs6c"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ifo62"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sucvt"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qe0r6"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lja18"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v7rf4"]
+atlas = ExtResource("30_d06r4")
+region = Rect2(512, 0, 64, 64)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_qpdv0"]
 animations = [{
 "frames": [{
@@ -235,6 +326,33 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_6tw00")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_strnc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0nh5d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tudfi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rjs6c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ifo62")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sucvt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qe0r6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lja18")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v7rf4")
 }],
 "loop": 1,
 "name": &"golpe",
@@ -394,4 +512,3 @@ rotation = 3.1393478
 scale = Vector2(-0.7137556, 0.8313091)
 sprite_frames = SubResource("SpriteFrames_qpdv0")
 animation = &"golpe"
-frame_progress = 0.064153254
