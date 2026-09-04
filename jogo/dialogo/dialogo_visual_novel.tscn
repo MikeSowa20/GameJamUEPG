@@ -1,0 +1,135 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://dialogo/dialogo_visual_novel.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://dialogo/personagem_texto.png" id="2_personagem"]
+[ext_resource type="Texture2D" path="res://dialogo/personagem_chefe.png" id="3_chefe"]
+
+[sub_resource type="StyleBoxFlat" id="StyleCaixa"]
+bg_color = Color(0.69, 0.68, 0.64, 0.98)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.48, 0.11, 0.08, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.62)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleNome"]
+bg_color = Color(0.48, 0.11, 0.08, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 3
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 3
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 4
+
+[node name="DialogoVisualNovel" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Fundo" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.025, 0.025, 0.035, 0.52)
+
+[node name="Retratos" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="RetratoEsquerdo" type="TextureRect" parent="Retratos"]
+layout_mode = 1
+anchors_preset = 3
+anchor_top = 1.0
+anchor_right = 0.56
+anchor_bottom = 1.0
+offset_top = -260.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("2_personagem")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RetratoDireito" type="TextureRect" parent="Retratos"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 0.44
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -260.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("3_chefe")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CaixaDialogo" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -96.0
+offset_right = -16.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("StyleCaixa")
+
+[node name="Nome" type="Label" parent="CaixaDialogo"]
+layout_mode = 0
+offset_left = 238.0
+offset_top = -23.0
+offset_right = 422.0
+offset_bottom = 7.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.96, 0.91, 0.82, 1)
+theme_override_colors/font_outline_color = Color(0.08, 0.02, 0.01, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleNome")
+text = "PERSONAGEM"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Texto" type="RichTextLabel" parent="CaixaDialogo"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 432.0
+offset_bottom = 75.0
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.075, 0.065, 0.055, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.18)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/normal_font_size = 15
+text = "Texto do dialogo"
+fit_content = true
+scroll_active = false
+
+[node name="Indicador" type="Label" parent="CaixaDialogo"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 61.0
+offset_right = 443.0
+offset_bottom = 83.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.48, 0.11, 0.08, 1)
+theme_override_font_sizes/font_size = 16
+text = "▼"
+horizontal_alignment = 1

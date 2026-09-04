@@ -231,7 +231,7 @@ func _physics_process(_delta: float) -> void:
 
 
 func ignorar_colisao_com_inimigos() -> void:
-	# Exceções preservam colisões com paredes, moedas e projéteis.
+	# Exceções preservam colisões com paredes, tokens e projéteis.
 	for inimigo: Node in get_tree().get_nodes_in_group("inimigos"):
 		if inimigo is PhysicsBody2D:
 			var corpo := inimigo as PhysicsBody2D
@@ -845,6 +845,8 @@ func iniciar_dash() -> void:
 
 
 		await get_tree().process_frame
+		if not is_inside_tree():
+			return
 
 
 	# ==================================================
@@ -876,6 +878,8 @@ func iniciar_dash() -> void:
 # ==================================================
 
 func iniciar_cooldown_dash() -> void:
+	if not is_inside_tree():
+		return
 
 	await get_tree().create_timer(
 		cooldown_dash

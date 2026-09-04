@@ -18,7 +18,7 @@ const FATOR_DIFICULDADE: float = 1.0
 
 var vida: float
 var jogador: CharacterBody2D = null
-var recompensa_moedas: int = 1
+var recompensa_tokens: int = 1
 
 
 # ==================================================
@@ -53,7 +53,7 @@ func _ready() -> void:
 	)
 	vida_maxima = atributos["vida"]
 	velocidade = atributos["velocidade"]
-	recompensa_moedas = atributos["recompensa"]
+	recompensa_tokens = atributos["recompensa"]
 
 	vida = vida_maxima
 
@@ -404,7 +404,7 @@ func morrer() -> void:
 	if morrendo:
 		return
 	morrendo = true
-	DificuldadeGlobal.dropar_moedas(global_position, recompensa_moedas)
+	DificuldadeGlobal.dropar_tokens(global_position, recompensa_tokens)
 
 	print("Inimigo morreu!")
 	velocity = Vector2.ZERO

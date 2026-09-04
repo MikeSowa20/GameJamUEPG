@@ -2,10 +2,11 @@ extends Node
 
 const AUMENTO_VIDA_POR_SALA: float = 0.35
 const AUMENTO_VELOCIDADE_POR_SALA: float = 0.12
-const MOEDAS_BASE: int = 2
+const TOKENS_BASE: int = 2
+const CENA_ESCOLHA_MELHORIA = preload("res://escolha_melhoria.tscn")
 
 var sala_atual: int = 1
-var moedas: int = 0
+var tokens: int = 0
 var mortes: int = 0
 var ultima_cena: String = ""
 var vida_jogador: int = 5
@@ -18,11 +19,12 @@ var braco_equipado: bool = false
 var perna_equipada: bool = false
 var escolha_aberta: bool = false
 var tela_escolha: Control = null
+var dialogo_inicial_loja_exibido: bool = false
 
 var canvas_hud: CanvasLayer
 var texto_dificuldade: Label
 var barra_dificuldade: ProgressBar
-var texto_moedas: Label
+var texto_tokens: Label
 
 
 func _ready() -> void:
@@ -68,11 +70,11 @@ func aplicar_dificuldade_inimigo(
 	return {
 		"vida": vida_base * multiplicador_vida * fator_tipo,
 		"velocidade": velocidade_base * multiplicador_velocidade,
-		"recompensa": maxi(1, roundi(MOEDAS_BASE * sala_atual * fator_tipo))
+		"recompensa": maxi(1, roundi(TOKENS_BASE * sala_atual * fator_tipo))
 	}
 
 
-func dropar_moedas(posicao: Vector2, valor_total: int) -> void:
+func dropar_tokens(posicao: Vector2, valor_total: int) -> void:
 	var cena := get_tree().current_scene
 	if cena == null:
 		return
@@ -86,11 +88,11 @@ func dropar_moedas(posicao: Vector2, valor_total: int) -> void:
 	var restante: int = maxi(valor_total, 1)
 
 	for indice: int in range(quantidade):
-		var moeda := preload("res://moeda.tscn").instantiate()
+		var token := preload("res://token.tscn").instantiate()
 		var valor: int = maxi(1, restante / (quantidade - indice))
 		restante -= valor
-		cena.add_child.call_deferred(moeda)
-		moeda.call_deferred(
+		cena.add_child.call_deferred(token)
+		token.call_deferred(
 			"configurar",
 			posicao,
 			valor,
@@ -98,8 +100,8 @@ func dropar_moedas(posicao: Vector2, valor_total: int) -> void:
 		)
 
 
-func adicionar_moedas(valor: int) -> void:
-	moedas += maxi(valor, 0)
+func adicionar_tokens(valor: int) -> void:
+	tokens += maxi(valor, 0)
 	atualizar_hud()
 
 
@@ -113,8 +115,9 @@ func bonus_pos_morte() -> float:
 
 func iniciar_nova_partida() -> void:
 	# Inicia uma campanha nova a partir do menu principal.
-	moedas = 0
+	tokens = 0
 	mortes = 0
+	dialogo_inicial_loja_exibido = false
 	braco_robotico_ativo = false
 	perna_robotica_ativa = false
 	cabeca_robotica_ativa = false
@@ -152,7 +155,7 @@ func get_multiplicador_perna() -> float:
 
 
 func comprar_melhoria(tipo: String, preco: int) -> bool:
-	if moedas < preco:
+	if tokens < preco:
 		return false
 	match tipo:
 		"braco":
@@ -169,7 +172,7 @@ func comprar_melhoria(tipo: String, preco: int) -> bool:
 			cabeca_robotica_ativa = true
 		_:
 			return false
-	moedas -= preco
+	tokens -= preco
 	atualizar_hud()
 	return true
 
@@ -177,70 +180,16 @@ func comprar_melhoria(tipo: String, preco: int) -> bool:
 func mostrar_escolha_melhoria() -> void:
 	if escolha_aberta:
 		return
-
 	await get_tree().process_frame
 	atualizar_sala_pela_cena()
 	escolha_aberta = true
 	get_tree().paused = true
-
-	tela_escolha = ColorRect.new()
-	tela_escolha.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	tela_escolha.color = Color(0.025, 0.035, 0.065, 0.88)
-	tela_escolha.mouse_filter = Control.MOUSE_FILTER_STOP
+	tela_escolha = CENA_ESCOLHA_MELHORIA.instantiate()
 	canvas_hud.add_child(tela_escolha)
-
-	var centro := CenterContainer.new()
-	centro.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	tela_escolha.add_child(centro)
-
-	var coluna := VBoxContainer.new()
-	coluna.add_theme_constant_override("separation", 14)
-	centro.add_child(coluna)
-
-	var titulo := Label.new()
-	titulo.text = "ESCOLHA UMA MELHORIA"
-	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	titulo.add_theme_font_size_override("font_size", 22)
-	titulo.add_theme_color_override("font_color", Color("ffe29a"))
-	coluna.add_child(titulo)
-
-	var subtitulo := Label.new()
-	subtitulo.text = "Sala %d concluída" % maxi(sala_atual - 1, 1)
-	subtitulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitulo.add_theme_font_size_override("font_size", 13)
-	coluna.add_child(subtitulo)
-
-	var cartoes := HBoxContainer.new()
-	cartoes.add_theme_constant_override("separation", 12)
-	coluna.add_child(cartoes)
-
-	criar_cartao(
-		cartoes,
-		"VELOCIDADE\n\n+10% de velocidade\npermanente",
-		"velocidade"
-	)
-	criar_cartao(
-		cartoes,
-		"RECUPERAÇÃO\n\nRecuperar todos\nos corações",
-		"vida"
-	)
-	criar_cartao(
-		cartoes,
-		"MOEDAS\n\n+%d moedas\n(10 × dificuldade)" % (10 * sala_atual),
-		"moedas"
-	)
+	tela_escolha.call("configurar", sala_atual)
 
 
-func criar_cartao(pai: HBoxContainer, texto: String, escolha: String) -> void:
-	var botao := Button.new()
-	botao.custom_minimum_size = Vector2(138, 145)
-	botao.text = texto
-	botao.add_theme_font_size_override("font_size", 14)
-	botao.pressed.connect(_selecionar_melhoria.bind(escolha))
-	pai.add_child(botao)
-
-
-func _selecionar_melhoria(escolha: String) -> void:
+func selecionar_melhoria(escolha: String) -> void:
 	match escolha:
 		"velocidade":
 			multiplicador_velocidade_jogador *= 1.10
@@ -248,12 +197,12 @@ func _selecionar_melhoria(escolha: String) -> void:
 			if jogador != null:
 				jogador.velocidade *= 1.10
 		"vida":
-			vida_jogador = 5
+			vida_jogador = get_vida_maxima()
 			var jogador := get_tree().get_first_node_in_group("jogador")
 			if jogador != null and jogador.has_method("recuperar_vida_total"):
 				jogador.recuperar_vida_total()
-		"moedas":
-			adicionar_moedas(10 * sala_atual)
+		"tokens":
+			adicionar_tokens(10 * sala_atual)
 
 	fechar_escolha()
 
@@ -299,10 +248,10 @@ func criar_hud() -> void:
 	barra_dificuldade.show_percentage = false
 	coluna.add_child(barra_dificuldade)
 
-	texto_moedas = Label.new()
-	texto_moedas.add_theme_color_override("font_color", Color("ffd166"))
-	texto_moedas.add_theme_font_size_override("font_size", 13)
-	coluna.add_child(texto_moedas)
+	texto_tokens = Label.new()
+	texto_tokens.add_theme_color_override("font_color", Color("ffd166"))
+	texto_tokens.add_theme_font_size_override("font_size", 13)
+	coluna.add_child(texto_tokens)
 	atualizar_hud()
 
 
@@ -312,4 +261,4 @@ func atualizar_hud() -> void:
 	texto_dificuldade.text = "Dificuldade: %d" % sala_atual
 	barra_dificuldade.max_value = maxf(10.0, float(sala_atual))
 	barra_dificuldade.value = sala_atual
-	texto_moedas.text = "Moedas: %d" % moedas
+	texto_tokens.text = "Tokens: %d" % tokens

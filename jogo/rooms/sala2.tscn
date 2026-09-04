@@ -5,12 +5,12 @@
 [ext_resource type="PackedScene" uid="uid://dla3ixvmiw37k" path="res://jogador/jogador.tscn" id="3_m5o6p"]
 [ext_resource type="PackedScene" uid="uid://bfsfyh5qriarn" path="res://inimigos/inimigo_comum.tscn" id="4_h8d5v"]
 [ext_resource type="PackedScene" uid="uid://d2m7ch8ssyusu" path="res://inimigos/inimigo_atirador.tscn" id="5_fwfw2"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_2b6d0"]
-load_path = "res://.godot/imported/pixil-frame-0.png-ad73aed19b00fd55eeaf2db0cae8f8ff.ctex"
+[ext_resource type="Texture2D" uid="uid://doys8h2sk0sg1" path="res://pixil-frame-0 (2).png" id="6_piso"]
+[ext_resource type="Texture2D" uid="uid://pj6ey33cnkex" path="res://pixil-frame-0 (3).png" id="7_objetos"]
+[ext_resource type="Texture2D" uid="uid://c623nx1p32kcb" path="res://TilesetV1.1.png" id="8_tileset"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_m5o6p"]
-texture = SubResource("CompressedTexture2D_2b6d0")
+texture = ExtResource("6_piso")
 texture_region_size = Vector2i(64, 32)
 use_texture_padding = false
 0:0/0 = 0
@@ -218,13 +218,8 @@ texture_region_size = Vector2i(64, 32)
 6:21/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 16, -32, 0, 0, -16, 32, 0)
 9:18/0 = 0
 
-[sub_resource type="Gradient" id="Gradient_6kd8w"]
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_d8gwv"]
-gradient = SubResource("Gradient_6kd8w")
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_h8d5v"]
-texture = SubResource("GradientTexture1D_d8gwv")
+texture = ExtResource("8_tileset")
 texture_region_size = Vector2i(64, 32)
 0:0/0 = 0
 1:0/0 = 0

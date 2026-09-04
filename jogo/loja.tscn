@@ -1,8 +1,64 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://co4t3eror37qw"]
 
-[ext_resource type="Script" path="res://loja.gd" id="1"]
+[ext_resource type="Script" uid="uid://boq3w6e7v623x" path="res://loja.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://nki8wb8orxyv" path="res://RetroWindowsGUI/Window_Base.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://rue3o4q31s6s" path="res://RetroWindowsGUI/Windows_Button.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://l2tb140r30b3" path="res://RetroWindowsGUI/Windows_Button_Focus.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://mc4b6e30jvur" path="res://RetroWindowsGUI/Windows_Button_Pressed.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://clw5w6cc3jj0j" path="res://RetroWindowsGUI/Windows_Button_Inactive.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://dpjuopso4k0ho" path="res://RetroWindowsGUI/Windows_Inner_Frame.png" id="7"]
 
-[node name="Loja" type="Control"]
+[sub_resource type="StyleBoxTexture" id="Window"]
+texture = ExtResource("2")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="Header"]
+bg_color = Color(0, 0, 0.5, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxTexture" id="Card"]
+texture = ExtResource("7")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="Button"]
+texture = ExtResource("3")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="ButtonPressed"]
+texture = ExtResource("5")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="ButtonHover"]
+texture = ExtResource("4")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="ButtonDisabled"]
+texture = ExtResource("6")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+
+[node name="Loja" type="Control" unique_id=1725021996]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,3 +66,211 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
+
+[node name="Fundo" type="ColorRect" parent="." unique_id=1742004115]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Centro" type="CenterContainer" parent="." unique_id=1214603584]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -35.5
+offset_top = -4.5
+offset_right = 35.5
+offset_bottom = 4.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Janela" type="PanelContainer" parent="Centro" unique_id=296932716]
+custom_minimum_size = Vector2(460, 246)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Window")
+
+[node name="Estrutura" type="VBoxContainer" parent="Centro/Janela" unique_id=1615871286]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Cabecalho" type="PanelContainer" parent="Centro/Janela/Estrutura" unique_id=1679017089]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Header")
+
+[node name="Titulo" type="Label" parent="Centro/Janela/Estrutura/Cabecalho" unique_id=1696480650]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "  OFICINA DE MODIFICAÇÕES"
+vertical_alignment = 1
+
+[node name="Margem" type="MarginContainer" parent="Centro/Janela/Estrutura" unique_id=883754842]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="Conteudo" type="VBoxContainer" parent="Centro/Janela/Estrutura/Margem" unique_id=390657838]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="TextoTokens" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo" unique_id=976082105]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0.5, 1)
+theme_override_font_sizes/font_size = 13
+text = "TOKENS DISPONÍVEIS: 0"
+horizontal_alignment = 1
+
+[node name="Cards" type="GridContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo" unique_id=1566159250]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+columns = 3
+
+[node name="CardBraco" type="PanelContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards" unique_id=1462789310]
+custom_minimum_size = Vector2(134, 120)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Card")
+
+[node name="Itens" type="VBoxContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardBraco" unique_id=1968425742]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardBraco/Itens" unique_id=1984830369]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "BRAÇO MODIFICADO"
+horizontal_alignment = 1
+
+[node name="Descricao" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardBraco/Itens" unique_id=27688288]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Disparo especial com
+o botão direito"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Preco" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardBraco/Itens" unique_id=216756506]
+layout_mode = 2
+text = "30 TOKENS"
+horizontal_alignment = 1
+
+[node name="Estado" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardBraco/Itens" unique_id=123061023]
+layout_mode = 2
+text = "DISPONÍVEL"
+horizontal_alignment = 1
+
+[node name="Comprar" type="Button" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardBraco/Itens" unique_id=602428492]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "COMPRAR"
+
+[node name="CardPerna" type="PanelContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards" unique_id=1577549446]
+custom_minimum_size = Vector2(134, 120)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Card")
+
+[node name="Itens" type="VBoxContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardPerna" unique_id=1547857990]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardPerna/Itens" unique_id=1003767445]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "PERNA MODIFICADA"
+horizontal_alignment = 1
+
+[node name="Descricao" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardPerna/Itens" unique_id=1438124584]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Dash duplo e
++1 coração máximo"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Preco" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardPerna/Itens" unique_id=1083474915]
+layout_mode = 2
+text = "90 TOKENS"
+horizontal_alignment = 1
+
+[node name="Estado" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardPerna/Itens" unique_id=524362973]
+layout_mode = 2
+text = "BLOQUEADO"
+horizontal_alignment = 1
+
+[node name="Comprar" type="Button" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardPerna/Itens" unique_id=291363726]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "COMPRAR"
+
+[node name="CardCabeca" type="PanelContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards" unique_id=105228206]
+custom_minimum_size = Vector2(134, 120)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Card")
+
+[node name="Itens" type="VBoxContainer" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardCabeca" unique_id=2001970477]
+layout_mode = 2
+
+[node name="Titulo" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardCabeca/Itens" unique_id=1816437956]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "CABEÇA MODIFICADA"
+horizontal_alignment = 1
+
+[node name="Descricao" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardCabeca/Itens" unique_id=439370189]
+layout_mode = 2
+size_flags_vertical = 3
+text = "+2 corações máximos
+permanentes"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Preco" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardCabeca/Itens" unique_id=1292677035]
+layout_mode = 2
+text = "150 TOKENS"
+horizontal_alignment = 1
+
+[node name="Estado" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardCabeca/Itens" unique_id=822066459]
+layout_mode = 2
+text = "BLOQUEADO"
+horizontal_alignment = 1
+
+[node name="Comprar" type="Button" parent="Centro/Janela/Estrutura/Margem/Conteudo/Cards/CardCabeca/Itens" unique_id=599374978]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/disabled = SubResource("ButtonDisabled")
+text = "COMPRAR"
+
+[node name="Mensagem" type="Label" parent="Centro/Janela/Estrutura/Margem/Conteudo" unique_id=353846093]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0, 0, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+
+[node name="Continuar" type="Button" parent="Centro/Janela/Estrutura/Margem/Conteudo" unique_id=1279329842]
+custom_minimum_size = Vector2(220, 25)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+text = "CONTINUAR"
