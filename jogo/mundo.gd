@@ -21,6 +21,7 @@ var ultima_direcao: Vector2 = Vector2.DOWN
 
 @onready var animacao: AnimatedSprite2D = $AnimatedSprite2D
 var braco_robotico_ativo: bool = false
+var perna_robotica_ativa: bool = false
 var disparo_braco_disponivel: bool = true
 @export var cooldown_disparo_braco: float = 0.4
 var botao_braco_dev: Button = null
@@ -36,6 +37,8 @@ var botao_braco_dev: Button = null
 
 var dashing: bool = false
 var dash_disponivel: bool = true
+var cargas_dash: int = 1
+var cargas_dash_maximas: int = 1
 
 
 # ==================================================
@@ -45,6 +48,7 @@ var dash_disponivel: bool = true
 const CORACOES_INICIAIS: int = 5
 
 var vida: int
+var vida_maxima_atual: int = CORACOES_INICIAIS
 var morto: bool = false
 
 @onready var barra_vida: HBoxContainer = $"../CanvasLayer/BarraVida"
@@ -105,17 +109,21 @@ func _ready() -> void:
 	# VIDA
 	# ==================================================
 
+	vida_maxima_atual = DificuldadeGlobal.get_vida_maxima()
 	if not DificuldadeGlobal.vida_inicializada:
-		DificuldadeGlobal.vida_jogador = CORACOES_INICIAIS
+		DificuldadeGlobal.vida_jogador = vida_maxima_atual
 		DificuldadeGlobal.vida_inicializada = true
 	vida = clampi(
 		DificuldadeGlobal.vida_jogador,
 		0,
-		CORACOES_INICIAIS
+		vida_maxima_atual
 	)
 	velocidade *= DificuldadeGlobal.multiplicador_velocidade_jogador
-	braco_robotico_ativo = DificuldadeGlobal.braco_robotico_ativo
-	criar_botao_braco_dev()
+	braco_robotico_ativo = DificuldadeGlobal.braco_equipado
+	perna_robotica_ativa = DificuldadeGlobal.perna_equipada
+	cargas_dash_maximas = 2 if perna_robotica_ativa else 1
+	cargas_dash = cargas_dash_maximas
+	criar_botoes_modificacoes()
 
 
 	# ==================================================
@@ -144,6 +152,7 @@ func _ready() -> void:
 # ==================================================
 
 func _physics_process(_delta: float) -> void:
+	ignorar_colisao_com_inimigos()
 
 	# ==================================================
 	# DASH
@@ -221,6 +230,15 @@ func _physics_process(_delta: float) -> void:
 		verificar_inimigos()
 
 
+func ignorar_colisao_com_inimigos() -> void:
+	# Exceções preservam colisões com paredes, moedas e projéteis.
+	for inimigo: Node in get_tree().get_nodes_in_group("inimigos"):
+		if inimigo is PhysicsBody2D:
+			var corpo := inimigo as PhysicsBody2D
+			add_collision_exception_with(corpo)
+			corpo.add_collision_exception_with(self)
+
+
 # ==================================================
 # ANIMAÇÃO DE MOVIMENTO
 # ==================================================
@@ -289,7 +307,11 @@ func atualizar_animacao_parado() -> void:
 
 func tocar_animacao(nome_base: StringName) -> void:
 	var nome_final: StringName = nome_base
-	if braco_robotico_ativo:
+	if perna_robotica_ativa:
+		var nome_perna := StringName(str(nome_base) + "_perna")
+		if animacao.sprite_frames.has_animation(nome_perna):
+			nome_final = nome_perna
+	elif braco_robotico_ativo:
 		var nome_braco := StringName(str(nome_base) + "_braco")
 		if animacao.sprite_frames.has_animation(nome_braco):
 			nome_final = nome_braco
@@ -297,14 +319,71 @@ func tocar_animacao(nome_base: StringName) -> void:
 
 
 func definir_braco_robotico(ativo: bool) -> void:
+	if not DificuldadeGlobal.braco_robotico_ativo:
+		return
 	braco_robotico_ativo = ativo
-	DificuldadeGlobal.braco_robotico_ativo = ativo
+	DificuldadeGlobal.braco_equipado = ativo
 	atualizar_texto_botao_braco()
 	var direcao_atual := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if direcao_atual == Vector2.ZERO:
 		tocar_animacao("parado")
 	else:
 		atualizar_animacao(direcao_atual)
+
+
+func definir_perna_robotica(ativo: bool) -> void:
+	if not DificuldadeGlobal.perna_robotica_ativa:
+		return
+	perna_robotica_ativa = ativo
+	DificuldadeGlobal.perna_equipada = ativo
+	cargas_dash_maximas = 2 if perna_robotica_ativa else 1
+	cargas_dash = mini(cargas_dash, cargas_dash_maximas)
+	if cargas_dash <= 0:
+		cargas_dash = cargas_dash_maximas
+	dash_disponivel = cargas_dash > 0
+	atualizar_texto_botoes_modificacoes()
+	var direcao_atual := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if direcao_atual == Vector2.ZERO:
+		tocar_animacao("parado")
+	else:
+		atualizar_animacao(direcao_atual)
+
+
+func criar_botoes_modificacoes() -> void:
+	var canvas := get_node_or_null("../CanvasLayer")
+	if canvas == null:
+		return
+	var coluna := VBoxContainer.new()
+	coluna.name = "Modificacoes"
+	coluna.anchor_left = 1.0
+	coluna.anchor_right = 1.0
+	coluna.offset_left = -128.0
+	coluna.offset_top = 8.0
+	coluna.offset_right = -8.0
+	coluna.custom_minimum_size = Vector2(120, 0)
+	coluna.add_theme_constant_override("separation", 4)
+	canvas.add_child(coluna)
+	if DificuldadeGlobal.braco_robotico_ativo:
+		botao_braco_dev = Button.new()
+		botao_braco_dev.custom_minimum_size = Vector2(120, 28)
+		botao_braco_dev.add_theme_font_size_override("font_size", 10)
+		botao_braco_dev.pressed.connect(func() -> void: definir_braco_robotico(not braco_robotico_ativo))
+		coluna.add_child(botao_braco_dev)
+	if DificuldadeGlobal.perna_robotica_ativa:
+		var botao_perna := Button.new()
+		botao_perna.name = "BotaoPerna"
+		botao_perna.custom_minimum_size = Vector2(120, 28)
+		botao_perna.add_theme_font_size_override("font_size", 10)
+		botao_perna.pressed.connect(func() -> void: definir_perna_robotica(not perna_robotica_ativa))
+		coluna.add_child(botao_perna)
+	atualizar_texto_botoes_modificacoes()
+
+
+func atualizar_texto_botoes_modificacoes() -> void:
+	atualizar_texto_botao_braco()
+	var botao_perna := get_node_or_null("../CanvasLayer/Modificacoes/BotaoPerna") as Button
+	if botao_perna != null:
+		botao_perna.text = "Perna: %s | Dash %d/%d" % ["ON" if perna_robotica_ativa else "OFF", cargas_dash, cargas_dash_maximas]
 
 
 func criar_botao_braco_dev() -> void:
@@ -324,7 +403,7 @@ func criar_botao_braco_dev() -> void:
 
 func atualizar_texto_botao_braco() -> void:
 	if is_instance_valid(botao_braco_dev):
-		botao_braco_dev.text = "Braço robótico: %s (DEV)" % (
+		botao_braco_dev.text = "Braço: %s" % (
 			"ON" if braco_robotico_ativo else "OFF"
 		)
 
@@ -670,7 +749,9 @@ func iniciar_dash() -> void:
 
 	dashing = true
 
-	dash_disponivel = false
+	cargas_dash -= 1
+	dash_disponivel = cargas_dash > 0
+	atualizar_texto_botoes_modificacoes()
 
 	velocity = Vector2.ZERO
 
@@ -786,7 +867,8 @@ func iniciar_dash() -> void:
 	# COOLDOWN
 	# ==================================================
 
-	iniciar_cooldown_dash()
+	if cargas_dash <= 0:
+		iniciar_cooldown_dash()
 
 
 # ==================================================
@@ -800,7 +882,9 @@ func iniciar_cooldown_dash() -> void:
 	).timeout
 
 
+	cargas_dash = cargas_dash_maximas
 	dash_disponivel = true
+	atualizar_texto_botoes_modificacoes()
 
 
 	print(
@@ -843,7 +927,7 @@ func receber_dano(_valor: float = 1.0) -> void:
 	vida = clamp(
 		vida,
 		0,
-		CORACOES_INICIAIS
+		vida_maxima_atual
 	)
 	DificuldadeGlobal.vida_jogador = vida
 
@@ -876,7 +960,7 @@ func atualizar_coracoes() -> void:
 	for filho: Node in barra_vida.get_children():
 		filho.free()
 
-	for indice: int in range(CORACOES_INICIAIS):
+	for indice: int in range(vida_maxima_atual):
 		var coracao := Label.new()
 		coracao.text = "♥" if indice < vida else "♡"
 		coracao.add_theme_font_size_override("font_size", 28)
@@ -890,7 +974,7 @@ func atualizar_coracoes() -> void:
 
 
 func recuperar_vida_total() -> void:
-	vida = CORACOES_INICIAIS
+	vida = vida_maxima_atual
 	DificuldadeGlobal.vida_jogador = vida
 	atualizar_coracoes()
 
@@ -904,6 +988,7 @@ func morrer() -> void:
 		return
 	morto = true
 	DificuldadeGlobal.registrar_morte()
+	DificuldadeGlobal.preparar_nova_run()
 
 	print(
 		"Jogador morreu!"
@@ -937,9 +1022,9 @@ func morrer() -> void:
 	await tween_morte.finished
 
 	get_tree().paused = false
-	var erro: Error = get_tree().change_scene_to_file("res://menu_inicial.tscn")
+	var erro: Error = get_tree().change_scene_to_file("res://loja.tscn")
 	if erro != OK:
-		push_error("Não foi possível voltar ao menu inicial.")
+		push_error("Não foi possível voltar à loja.")
 
 
 # ==================================================

@@ -20,6 +20,15 @@
 [ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_e2_braco.png" id="18_braco_e2"]
 [ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_f1_braco.png" id="19_braco_f1"]
 [ext_resource type="Texture2D" path="res://jogador/personagemBraco/personagem_andando_f2_braco.png" id="20_braco_f2"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_parado_perna.png" id="21_perna_parado"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_c1_perna.png" id="22_perna_c1"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_c2_perna.png" id="23_perna_c2"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_d1_perna.png" id="24_perna_d1"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_d2_perna.png" id="25_perna_d2"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_e1_perna.png" id="26_perna_e1"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_e2_perna.png" id="27_perna_e2"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_f1_perna.png" id="28_perna_f1"]
+[ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_f2_perna.png" id="29_perna_f2"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_wjtt2"]
 animations = [{
@@ -130,6 +139,31 @@ animations = [{
 "frames": [{"duration": 1.0, "texture": ExtResource("12_braco_parado")}],
 "loop": true,
 "name": &"parado_braco",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("28_perna_f1")}, {"duration": 1.0, "texture": ExtResource("29_perna_f2")}],
+"loop": true,
+"name": &"andando_baixo_perna",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("22_perna_c1")}, {"duration": 1.0, "texture": ExtResource("23_perna_c2")}],
+"loop": true,
+"name": &"andando_cima_perna",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("24_perna_d1")}, {"duration": 1.0, "texture": ExtResource("25_perna_d2")}],
+"loop": true,
+"name": &"andando_direita_perna",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("26_perna_e1")}, {"duration": 1.0, "texture": ExtResource("27_perna_e2")}],
+"loop": true,
+"name": &"andando_esquerda_perna",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("21_perna_parado")}],
+"loop": true,
+"name": &"parado_perna",
 "speed": 5.0
 }]
 

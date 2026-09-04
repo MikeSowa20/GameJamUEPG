@@ -12,6 +12,10 @@ var vida_jogador: int = 5
 var vida_inicializada: bool = false
 var multiplicador_velocidade_jogador: float = 1.0
 var braco_robotico_ativo: bool = false
+var perna_robotica_ativa: bool = false
+var cabeca_robotica_ativa: bool = false
+var braco_equipado: bool = false
+var perna_equipada: bool = false
 var escolha_aberta: bool = false
 var tela_escolha: Control = null
 
@@ -43,7 +47,7 @@ func atualizar_sala_pela_cena() -> void:
 		return
 
 	var nome: String = cena.scene_file_path.get_file().get_basename()
-	canvas_hud.visible = nome != "menu_inicial"
+	canvas_hud.visible = nome.begins_with("sala")
 	if nome.begins_with("sala"):
 		var numero: int = nome.trim_prefix("sala").to_int()
 		if numero > 0:
@@ -108,17 +112,66 @@ func bonus_pos_morte() -> float:
 
 
 func iniciar_nova_partida() -> void:
+	# Inicia uma campanha nova a partir do menu principal.
+	moedas = 0
+	mortes = 0
+	braco_robotico_ativo = false
+	perna_robotica_ativa = false
+	cabeca_robotica_ativa = false
+	braco_equipado = false
+	perna_equipada = false
+	preparar_nova_run()
+
+
+func preparar_nova_run() -> void:
+	# Limpa somente os bônus obtidos durante a run. Dinheiro e peças ficam.
 	if escolha_aberta:
 		fechar_escolha()
 	get_tree().paused = false
 	sala_atual = 1
-	moedas = 0
-	vida_jogador = 5
+	vida_jogador = get_vida_maxima()
 	vida_inicializada = false
 	multiplicador_velocidade_jogador = 1.0
-	braco_robotico_ativo = false
+	braco_equipado = braco_robotico_ativo
+	perna_equipada = perna_robotica_ativa
 	ultima_cena = ""
 	atualizar_hud()
+
+
+func get_vida_maxima() -> int:
+	var total := 5
+	if perna_robotica_ativa:
+		total += 1
+	if cabeca_robotica_ativa:
+		total += 2
+	return total
+
+
+func get_multiplicador_perna() -> float:
+	return 1.0
+
+
+func comprar_melhoria(tipo: String, preco: int) -> bool:
+	if moedas < preco:
+		return false
+	match tipo:
+		"braco":
+			if braco_robotico_ativo:
+				return false
+			braco_robotico_ativo = true
+		"perna":
+			if perna_robotica_ativa or not braco_robotico_ativo:
+				return false
+			perna_robotica_ativa = true
+		"cabeca":
+			if cabeca_robotica_ativa or not perna_robotica_ativa:
+				return false
+			cabeca_robotica_ativa = true
+		_:
+			return false
+	moedas -= preco
+	atualizar_hud()
+	return true
 
 
 func mostrar_escolha_melhoria() -> void:

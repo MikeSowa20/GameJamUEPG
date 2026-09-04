@@ -28,8 +28,8 @@ func iniciar_jogo() -> void:
 	iniciando = true
 	botao_start.disabled = true
 	DificuldadeGlobal.iniciar_nova_partida()
-	var erro: Error = get_tree().change_scene_to_file("res://rooms/sala1.tscn")
+	var erro: Error = get_tree().change_scene_to_file("res://loja.tscn")
 	if erro != OK:
 		iniciando = false
 		botao_start.disabled = false
-		push_error("Não foi possível iniciar a Sala 1.")
+		push_error("Não foi possível abrir a loja.")

@@ -99,9 +99,14 @@ theme_override_font_sizes/font_size = 13
 text = "Derrote máquinas. Monte sua build. Sobreviva."
 horizontal_alignment = 1
 
+[node name="EspacoAntesDoStart" type="Control" parent="Centro/Conteudo/Margem/Itens"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+
 [node name="BotaoStart" type="Button" parent="Centro/Conteudo/Margem/Itens"]
 custom_minimum_size = Vector2(210, 48)
 layout_mode = 2
+theme_override_constants/outline_size = 0
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 20
