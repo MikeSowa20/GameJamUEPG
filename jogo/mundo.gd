@@ -326,7 +326,11 @@ func atualizar_animacao_parado() -> void:
 
 func tocar_animacao(nome_base: StringName) -> void:
 	var nome_final: StringName = nome_base
-	if perna_robotica_ativa:
+	if DificuldadeGlobal.cabeca_robotica_ativa:
+		var nome_cabeca := StringName(str(nome_base) + "_cabeca")
+		if animacao.sprite_frames.has_animation(nome_cabeca):
+			nome_final = nome_cabeca
+	elif perna_robotica_ativa:
 		var nome_perna := StringName(str(nome_base) + "_perna")
 		if animacao.sprite_frames.has_animation(nome_perna):
 			nome_final = nome_perna

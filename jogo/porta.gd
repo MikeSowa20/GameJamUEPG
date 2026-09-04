@@ -1,7 +1,7 @@
 extends Area2D
 
 const FILE_BEGIN = "res://rooms/sala"
-const ULTIMA_SALA: int = 4
+const ULTIMA_SALA: int = 6
 var trocando_sala: bool = false
 var bloqueada: bool = true
 

@@ -29,6 +29,15 @@
 [ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_e2_perna.png" id="27_perna_e2"]
 [ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_f1_perna.png" id="28_perna_f1"]
 [ext_resource type="Texture2D" path="res://jogador/personagem perna/personagem_andando_f2_perna.png" id="29_perna_f2"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_parado_cabeca.png" id="30_cabeca_parado"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_c1_cabeca.png" id="31_cabeca_c1"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_c2_cabeca.png" id="32_cabeca_c2"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_d1_cabeca.png" id="33_cabeca_d1"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_d2_cabeca.png" id="34_cabeca_d2"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_e1_cabeca.png" id="35_cabeca_e1"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_e2_cabeca.png" id="36_cabeca_e2"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_f1_cabeca.png" id="37_cabeca_f1"]
+[ext_resource type="Texture2D" path="res://jogador/Sprites personagem cabeça/personagem_andando_f2_cabeca.png" id="38_cabeca_f2"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_wjtt2"]
 animations = [{
@@ -164,6 +173,31 @@ animations = [{
 "frames": [{"duration": 1.0, "texture": ExtResource("21_perna_parado")}],
 "loop": true,
 "name": &"parado_perna",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("37_cabeca_f1")}, {"duration": 1.0, "texture": ExtResource("38_cabeca_f2")}],
+"loop": true,
+"name": &"andando_baixo_cabeca",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("31_cabeca_c1")}, {"duration": 1.0, "texture": ExtResource("32_cabeca_c2")}],
+"loop": true,
+"name": &"andando_cima_cabeca",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("33_cabeca_d1")}, {"duration": 1.0, "texture": ExtResource("34_cabeca_d2")}],
+"loop": true,
+"name": &"andando_direita_cabeca",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("35_cabeca_e1")}, {"duration": 1.0, "texture": ExtResource("36_cabeca_e2")}],
+"loop": true,
+"name": &"andando_esquerda_cabeca",
+"speed": 5.0
+}, {
+"frames": [{"duration": 1.0, "texture": ExtResource("30_cabeca_parado")}],
+"loop": true,
+"name": &"parado_cabeca",
 "speed": 5.0
 }]
 
