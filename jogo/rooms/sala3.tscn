@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://dove0uxhwds18"]
+[gd_scene format=4 uid="uid://cixjfawtjfn8j"]
 
 [ext_resource type="Texture2D" uid="uid://pj6ey33cnkex" path="res://pixil-frame-0 (3).png" id="1_4t63b"]
 [ext_resource type="PackedScene" uid="uid://b1ibb7wdyqey7" path="res://porta.tscn" id="2_pebh2"]
@@ -1680,11 +1680,11 @@ position = Vector2(213, 344)
 
 [node name="Inimigo_comum" parent="." unique_id=594391312 instance=ExtResource("6_pif1j")]
 z_index = 1
-position = Vector2(393, 264)
+position = Vector2(233, 183)
 
 [node name="Inimigo_Atirador" parent="." unique_id=1943938195 instance=ExtResource("7_gvfxw")]
 z_index = 1
-position = Vector2(75, 99)
+position = Vector2(252, 89)
 
 [node name="Inimigo_Atirador2" parent="." unique_id=1886107324 instance=ExtResource("7_gvfxw")]
 z_index = 1

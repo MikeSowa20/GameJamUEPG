@@ -1,5 +1,7 @@
 extends Area2D
 
+const EFEITOS = preload("res://efeitos_visuais.gd")
+
 
 # ==================================================
 # CONFIGURAÇÕES
@@ -18,6 +20,8 @@ const DANO_AO_JOGADOR: int = 1
 
 # Inimigo que criou o projétil
 var dono: Node = null
+var tempo_animacao := 0.0
+@onready var brilho: Polygon2D = $Brilho
 
 
 # ==================================================
@@ -69,6 +73,8 @@ func configurar(
 # ==================================================
 
 func _physics_process(delta: float) -> void:
+	tempo_animacao += delta
+	brilho.scale = Vector2.ONE * (1.55 + sin(tempo_animacao * 18.0) * 0.22)
 
 	# Ainda não recebeu uma direção
 	if direcao == Vector2.ZERO:
@@ -93,6 +99,16 @@ func _quando_entrou_em_corpo(
 	if corpo == dono:
 		return
 
+	# Tiros da impressora atravessam outros inimigos. Sem isso, formações de
+	# inimigos bloqueavam o disparo antes que ele alcançasse o jogador.
+	if corpo.is_in_group("inimigos"):
+		return
+
+	# O piso isométrico possui formas de colisão usadas pelo mapa. Ele não deve
+	# bloquear tiros; somente paredes/obstáculos continuam destruindo o projétil.
+	if corpo is TileMapLayer and corpo.name == "chaolayer":
+		return
+
 
 	# ==================================================
 	# JOGADOR
@@ -110,6 +126,7 @@ func _quando_entrou_em_corpo(
 
 			corpo.receber_dano(DANO_AO_JOGADOR)
 
+		criar_impacto()
 		# Destrói o projétil
 		queue_free()
 
@@ -125,5 +142,12 @@ func _quando_entrou_em_corpo(
 		corpo.name
 	)
 
+	criar_impacto()
 	# Destrói ao bater em parede/obstáculo
 	queue_free()
+
+
+func criar_impacto() -> void:
+	EFEITOS.criar_clarao(get_parent(), global_position, Color(0.65, 0.95, 1.0, 1.0), 15.0, 0.14)
+	EFEITOS.criar_onda(get_parent(), global_position, Color(0.15, 0.75, 1.0, 0.9), 24.0, 0.22)
+	EFEITOS.criar_faiscas(get_parent(), global_position, Color(0.4, 0.9, 1.0, 1.0), 8, 22.0, 0.2)

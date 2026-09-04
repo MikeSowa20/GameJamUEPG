@@ -197,12 +197,14 @@ func selecionar_melhoria(escolha: String) -> void:
 			if jogador != null:
 				jogador.velocidade *= 1.10
 		"vida":
-			vida_jogador = get_vida_maxima()
 			var jogador := get_tree().get_first_node_in_group("jogador")
-			if jogador != null and jogador.has_method("recuperar_vida_total"):
-				jogador.recuperar_vida_total()
+			if jogador != null and jogador.has_method("recuperar_vida"):
+				jogador.recuperar_vida(2)
+			else:
+				vida_jogador = mini(vida_jogador + 2, get_vida_maxima())
 		"tokens":
-			adicionar_tokens(10 * sala_atual)
+			var sala_concluida := maxi(sala_atual - 1, 1)
+			adicionar_tokens(5 * sala_concluida)
 
 	fechar_escolha()
 

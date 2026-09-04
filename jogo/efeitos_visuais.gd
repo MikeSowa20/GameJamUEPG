@@ -63,6 +63,38 @@ static func criar_clarao(
 	tween.finished.connect(brilho.queue_free)
 
 
+static func criar_faiscas(
+	pai: Node,
+	posicao_global: Vector2,
+	cor: Color,
+	quantidade: int = 10,
+	distancia: float = 28.0,
+	duracao: float = 0.25
+) -> void:
+	if not is_instance_valid(pai):
+		return
+	for indice: int in range(quantidade):
+		var faisca := Line2D.new()
+		faisca.z_index = 22
+		faisca.top_level = true
+		faisca.global_position = posicao_global
+		faisca.width = randf_range(1.5, 3.0)
+		faisca.default_color = cor
+		var direcao := Vector2.from_angle(TAU * indice / quantidade + randf_range(-0.16, 0.16))
+		faisca.add_point(Vector2.ZERO)
+		faisca.add_point(direcao * randf_range(4.0, 9.0))
+		pai.add_child(faisca)
+		var destino := direcao * randf_range(distancia * 0.65, distancia)
+		var tween := faisca.create_tween()
+		tween.set_parallel(true)
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+		tween.tween_property(faisca, "position", destino, duracao)
+		tween.tween_property(faisca, "modulate:a", 0.0, duracao)
+		tween.tween_property(faisca, "width", 0.2, duracao)
+		tween.finished.connect(faisca.queue_free)
+
+
 static func criar_pos_imagem(
 	sprite: AnimatedSprite2D,
 	pai: Node,

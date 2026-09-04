@@ -27,15 +27,16 @@ var recompensa_tokens: int = 1
 
 @export var distancia_ataque: float = 40.0
 @export var alcance_golpe: float = 60.0
-@export var largura_golpe: float = 12.0
+@export var largura_golpe: float = 18.0
 
-@export var tempo_carregamento: float = 0.6
-@export var tempo_golpe: float = 0.3
+@export var tempo_carregamento: float = 0.5
+@export var tempo_golpe: float = 0.25
 @export var tempo_cooldown: float = 1.0
 
 var atacando: bool = false
 var pode_atacar: bool = true
 var morrendo: bool = false
+var tween_aviso_ataque: Tween = null
 
 @onready var attack_area: Polygon2D = $AttackArea/Polygon2D
 @onready var icon: AnimatedSprite2D = $Icon
@@ -199,6 +200,12 @@ func iniciar_ataque() -> void:
 	# ==================================================
 
 	attack_area.visible = true
+	attack_area.modulate = Color(1.0, 0.65, 0.15, 0.28)
+	tween_aviso_ataque = create_tween()
+	tween_aviso_ataque.set_loops()
+	tween_aviso_ataque.set_trans(Tween.TRANS_SINE)
+	tween_aviso_ataque.tween_property(attack_area, "modulate:a", 0.8, 0.12)
+	tween_aviso_ataque.tween_property(attack_area, "modulate:a", 0.25, 0.12)
 
 
 	# ==================================================
@@ -218,6 +225,12 @@ func iniciar_ataque() -> void:
 	velocity = Vector2.ZERO
 
 	# Causa dano
+	if tween_aviso_ataque != null and tween_aviso_ataque.is_valid():
+		tween_aviso_ataque.kill()
+	attack_area.modulate = Color(1.0, 0.12, 0.05, 1.0)
+	var ponta_golpe := global_position + Vector2.RIGHT.rotated(attack_area.rotation) * alcance_golpe
+	EfeitosVisuais.criar_clarao(get_parent(), ponta_golpe, Color(1.0, 0.75, 0.2, 1.0), 18.0, 0.16)
+	EfeitosVisuais.criar_faiscas(get_parent(), ponta_golpe, Color(1.0, 0.3, 0.08, 1.0), 9, 24.0, 0.22)
 	verificar_dano_ataque()
 
 
@@ -337,9 +350,9 @@ func criar_area_ataque() -> void:
 	# Vermelho com 80% de opacidade
 	attack_area.color = Color(
 		1.0,
-		0.0,
-		0.0,
-		0.8
+		0.2,
+		0.05,
+		0.42
 	)
 
 
@@ -348,9 +361,13 @@ func criar_area_ataque() -> void:
 # ==================================================
 
 func finalizar_ataque() -> void:
+	if tween_aviso_ataque != null and tween_aviso_ataque.is_valid():
+		tween_aviso_ataque.kill()
+	tween_aviso_ataque = null
 
 	# Esconde a área vermelha
 	attack_area.visible = false
+	attack_area.modulate = Color.WHITE
 
 	# Libera o movimento
 	atacando = false

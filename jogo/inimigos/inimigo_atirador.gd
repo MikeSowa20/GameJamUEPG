@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const EFEITOS = preload("res://efeitos_visuais.gd")
+const SOM_DISPARO_IMPRESSORA = preload("res://sons/inimigos/disparo_impressora.ogg")
 
 
 # ============================================================
@@ -54,8 +55,9 @@ var recompensa_tokens: int = 1
 # PROJÉTIL
 # ============================================================
 
-# Arraste o projetil.tscn para essa propriedade no Inspector
-@export var projetil_cena: PackedScene
+# Possui um valor padrão para funcionar em qualquer sala, mesmo quando a
+# instância não recebeu uma sobrescrita pelo Inspector.
+@export var projetil_cena: PackedScene = preload("res://inimigos/projetil.tscn")
 
 
 # ============================================================
@@ -99,6 +101,7 @@ var chacoalhando: bool = false
 var direcao_recuo_tiro: Vector2 = Vector2.ZERO
 var recuo_restante: float = 0.0
 var tween_mira: Tween = null
+var marcador_mira: Line2D = null
 
 
 # ============================================================
@@ -114,6 +117,7 @@ var tween_mira: Tween = null
 # ============================================================
 
 @onready var sprite: Sprite2D = $Sprite2D
+var audio_disparo: AudioStreamPlayer
 
 
 # ============================================================
@@ -136,6 +140,11 @@ var sprite_rotacao_original: float
 # ============================================================
 
 func _ready() -> void:
+	audio_disparo = AudioStreamPlayer.new()
+	audio_disparo.name = "AudioDisparo"
+	audio_disparo.stream = SOM_DISPARO_IMPRESSORA
+	audio_disparo.volume_db = -7.0
+	add_child(audio_disparo)
 	var atributos: Dictionary = DificuldadeGlobal.aplicar_dificuldade_inimigo(
 		vida_maxima,
 		velocidade,
@@ -165,6 +174,7 @@ func _ready() -> void:
 	attack_polygon.color.a = 0.2
 
 	criar_area_ataque()
+	criar_marcador_mira()
 
 
 # ============================================================
@@ -574,6 +584,14 @@ func efeito_disparo() -> void:
 		18.0,
 		0.16
 	)
+	EFEITOS.criar_faiscas(
+		get_parent(),
+		global_position + direcao * 25.0,
+		Color(0.3, 0.9, 1.0, 1.0),
+		10,
+		28.0,
+		0.24
+	)
 
 
 	# ========================================================
@@ -686,6 +704,8 @@ func iniciar_pulso_mira() -> void:
 		0.25,
 		0.13
 	)
+	if is_instance_valid(marcador_mira):
+		marcador_mira.visible = true
 
 
 func parar_pulso_mira() -> void:
@@ -693,6 +713,8 @@ func parar_pulso_mira() -> void:
 		tween_mira.kill()
 	tween_mira = null
 	attack_polygon.modulate = Color.WHITE
+	if is_instance_valid(marcador_mira):
+		marcador_mira.visible = false
 
 
 # ============================================================
@@ -732,6 +754,9 @@ func atirar() -> void:
 
 		return
 
+	audio_disparo.pitch_scale = randf_range(0.94, 1.04)
+	audio_disparo.play()
+
 
 	# ========================================================
 	# CRIA O PROJÉTIL
@@ -752,9 +777,11 @@ func atirar() -> void:
 		return
 
 
-	# Coloca o projétil no mesmo nível do inimigo
+	# Coloca o projétil no mesmo nível do inimigo. A transformação global é
+	# definida depois para não herdar a rotação da impressora.
 
 	get_parent().add_child(projetil)
+	projetil.top_level = true
 
 
 	# ========================================================
@@ -895,6 +922,19 @@ func criar_area_ataque() -> void:
 		0.0,
 		0.2
 	)
+
+
+func criar_marcador_mira() -> void:
+	marcador_mira = Line2D.new()
+	marcador_mira.name = "MarcadorMira"
+	marcador_mira.position = Vector2(alcance_ataque, 0.0)
+	marcador_mira.width = 2.0
+	marcador_mira.default_color = Color(1.0, 0.2, 0.12, 0.95)
+	marcador_mira.closed = true
+	for indice: int in range(17):
+		marcador_mira.add_point(Vector2.from_angle(TAU * indice / 16.0) * 9.0)
+	marcador_mira.visible = false
+	attack_area.add_child(marcador_mira)
 
 
 # ============================================================

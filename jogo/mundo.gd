@@ -2,6 +2,15 @@ extends CharacterBody2D
 
 const EFEITOS = preload("res://efeitos_visuais.gd")
 const CENA_DISPARO_BRACO = preload("res://jogador/disparo_braco.tscn")
+const SOM_DASH = preload("res://sons/personagem/dash.ogg")
+const SOM_ATAQUE = preload("res://sons/personagem/ataque.ogg")
+const SOM_DISPARO = preload("res://sons/personagem/disparo.ogg")
+const SOM_DANO = preload("res://sons/personagem/dano.ogg")
+const SONS_PASSOS: Array[AudioStream] = [
+	preload("res://sons/personagem/andar_01.ogg"),
+	preload("res://sons/personagem/andar_02.ogg"),
+	preload("res://sons/personagem/andar_03.ogg")
+]
 
 
 # ==================================================
@@ -20,11 +29,18 @@ var ultima_direcao: Vector2 = Vector2.DOWN
 # ==================================================
 
 @onready var animacao: AnimatedSprite2D = $AnimatedSprite2D
+@onready var camera: Camera2D = $Camera2D
 var braco_robotico_ativo: bool = false
 var perna_robotica_ativa: bool = false
 var disparo_braco_disponivel: bool = true
 @export var cooldown_disparo_braco: float = 0.4
 var botao_braco_dev: Button = null
+var audio_acoes: AudioStreamPlayer
+var audio_passos: AudioStreamPlayer
+var tempo_ate_proximo_passo: float = 0.0
+var indice_passo: int = 0
+var tween_tremida: Tween = null
+var posicao_camera_original: Vector2
 
 
 # ==================================================
@@ -97,6 +113,8 @@ var direcao_ataque: Vector2 = Vector2.RIGHT
 # ==================================================
 
 func _ready() -> void:
+	criar_audio_personagem()
+	posicao_camera_original = camera.position
 
 	# ==================================================
 	# GRUPO DO JOGADOR
@@ -151,7 +169,7 @@ func _ready() -> void:
 # FÍSICA
 # ==================================================
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	ignorar_colisao_com_inimigos()
 
 	# ==================================================
@@ -219,6 +237,7 @@ func _physics_process(_delta: float) -> void:
 	# ==================================================
 
 	move_and_slide()
+	atualizar_som_passos(delta)
 
 
 	# ==================================================
@@ -418,6 +437,7 @@ func disparar_braco_robotico() -> void:
 	get_parent().add_child(disparo)
 	disparo.global_position = global_position + direcao.normalized() * 22.0
 	disparo.configurar(direcao, self)
+	tocar_som_acao(SOM_DISPARO, -5.0, randf_range(0.96, 1.04))
 	disparo_braco_disponivel = false
 	EFEITOS.criar_clarao(
 		get_parent(),
@@ -482,6 +502,7 @@ func atacar() -> void:
 	# ==================================================
 
 	atacando = true
+	tocar_som_acao(SOM_ATAQUE, -7.0, randf_range(0.94, 1.06))
 
 	inimigos_atingidos.clear()
 
@@ -748,6 +769,7 @@ func iniciar_dash() -> void:
 	# ==================================================
 
 	dashing = true
+	tocar_som_acao(SOM_DASH, -6.0, randf_range(0.96, 1.04))
 
 	cargas_dash -= 1
 	dash_disponivel = cargas_dash > 0
@@ -904,11 +926,9 @@ func receber_dano(_valor: float = 1.0) -> void:
 	if morto:
 		return
 
-	animacao.modulate = Color(1.0, 0.2, 0.2, 1.0)
-	var tween_impacto := create_tween()
-	tween_impacto.set_trans(Tween.TRANS_SINE)
-	tween_impacto.set_ease(Tween.EASE_OUT)
-	tween_impacto.tween_property(animacao, "modulate", Color.WHITE, 0.22)
+	tocar_som_acao(SOM_DANO, -4.0, randf_range(0.94, 1.04))
+	piscar_ao_receber_dano()
+	tremer_camera()
 	EFEITOS.criar_onda(
 		get_parent(),
 		global_position,
@@ -960,6 +980,58 @@ func receber_dano(_valor: float = 1.0) -> void:
 		morrer()
 
 
+func criar_audio_personagem() -> void:
+	audio_acoes = AudioStreamPlayer.new()
+	audio_acoes.name = "AudioAcoes"
+	add_child(audio_acoes)
+	audio_passos = AudioStreamPlayer.new()
+	audio_passos.name = "AudioPassos"
+	audio_passos.volume_db = -13.0
+	add_child(audio_passos)
+
+
+func tocar_som_acao(som: AudioStream, volume: float, tom: float = 1.0) -> void:
+	audio_acoes.stream = som
+	audio_acoes.volume_db = volume
+	audio_acoes.pitch_scale = tom
+	audio_acoes.play()
+
+
+func atualizar_som_passos(delta: float) -> void:
+	if velocity.length() < 1.0 or dashing or morto:
+		tempo_ate_proximo_passo = 0.0
+		return
+	tempo_ate_proximo_passo -= delta
+	if tempo_ate_proximo_passo > 0.0:
+		return
+	audio_passos.stream = SONS_PASSOS[indice_passo]
+	audio_passos.pitch_scale = randf_range(0.94, 1.06)
+	audio_passos.play()
+	indice_passo = (indice_passo + 1) % SONS_PASSOS.size()
+	tempo_ate_proximo_passo = 0.32
+
+
+func piscar_ao_receber_dano() -> void:
+	animacao.modulate = Color.WHITE
+	var tween_impacto := create_tween()
+	tween_impacto.set_trans(Tween.TRANS_SINE)
+	for repeticao: int in range(3):
+		tween_impacto.tween_property(animacao, "modulate", Color(1.0, 0.25, 0.25, 1.0), 0.055)
+		tween_impacto.tween_property(animacao, "modulate", Color.WHITE, 0.055)
+
+
+func tremer_camera() -> void:
+	if tween_tremida != null and tween_tremida.is_valid():
+		tween_tremida.kill()
+	camera.position = posicao_camera_original
+	tween_tremida = create_tween()
+	tween_tremida.set_trans(Tween.TRANS_SINE)
+	tween_tremida.set_ease(Tween.EASE_OUT)
+	for intensidade: float in [4.0, 3.0, 2.0, 1.0]:
+		tween_tremida.tween_property(camera, "position", posicao_camera_original + Vector2(randf_range(-intensidade, intensidade), randf_range(-intensidade, intensidade)), 0.035)
+	tween_tremida.tween_property(camera, "position", posicao_camera_original, 0.05)
+
+
 func atualizar_coracoes() -> void:
 	for filho: Node in barra_vida.get_children():
 		filho.free()
@@ -979,6 +1051,12 @@ func atualizar_coracoes() -> void:
 
 func recuperar_vida_total() -> void:
 	vida = vida_maxima_atual
+	DificuldadeGlobal.vida_jogador = vida
+	atualizar_coracoes()
+
+
+func recuperar_vida(quantidade: int) -> void:
+	vida = mini(vida + maxi(quantidade, 0), vida_maxima_atual)
 	DificuldadeGlobal.vida_jogador = vida
 	atualizar_coracoes()
 

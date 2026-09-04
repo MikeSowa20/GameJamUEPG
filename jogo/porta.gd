@@ -1,6 +1,7 @@
 extends Area2D
 
 const FILE_BEGIN = "res://rooms/sala"
+const ULTIMA_SALA: int = 4
 var trocando_sala: bool = false
 var bloqueada: bool = true
 
@@ -60,6 +61,11 @@ func _on_body_entered(body: Node2D) -> void:
 	var cena_atual: String = get_tree().current_scene.scene_file_path
 	var nome_sala: String = cena_atual.get_file().get_basename()
 	var numero_atual: int = nome_sala.trim_prefix("sala").to_int()
+	if numero_atual >= ULTIMA_SALA:
+		trocando_sala = true
+		set_deferred("monitoring", false)
+		call_deferred("_finalizar_run")
+		return
 	var proxima_sala: String = FILE_BEGIN + str(numero_atual + 1) + ".tscn"
 
 	if not ResourceLoader.exists(proxima_sala):
@@ -79,3 +85,12 @@ func _trocar_para_proxima_sala(caminho: String) -> void:
 		push_error("Não foi possível abrir a sala: " + caminho)
 	else:
 		DificuldadeGlobal.call_deferred("mostrar_escolha_melhoria")
+
+
+func _finalizar_run() -> void:
+	get_tree().paused = false
+	var erro: Error = get_tree().change_scene_to_file("res://loja.tscn")
+	if erro != OK:
+		trocando_sala = false
+		monitoring = true
+		push_error("Não foi possível voltar à loja após a sala final.")

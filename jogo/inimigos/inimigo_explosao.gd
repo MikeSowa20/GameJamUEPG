@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const EFEITOS = preload("res://efeitos_visuais.gd")
+const SOM_EXPLOSAO = preload("res://sons/inimigos/explosao_extintor.ogg")
 
 
 # ==================================================
@@ -94,6 +95,7 @@ var morrendo: bool = false
 @onready var collision_dano: CollisionShape2D = (
 	$Area2D/CollisionShape2D
 )
+var audio_explosao: AudioStreamPlayer
 
 
 # ==================================================
@@ -121,6 +123,11 @@ var icon_rotacao_original: float
 # ==================================================
 
 func _ready() -> void:
+	audio_explosao = AudioStreamPlayer.new()
+	audio_explosao.name = "AudioExplosao"
+	audio_explosao.stream = SOM_EXPLOSAO
+	audio_explosao.volume_db = -5.0
+	add_child(audio_explosao)
 	var atributos: Dictionary = DificuldadeGlobal.aplicar_dificuldade_inimigo(
 		vida_maxima,
 		velocidade,
@@ -370,6 +377,8 @@ func iniciar_carregamento() -> void:
 	# ==================================================
 
 	raio_dano.visible = true
+	raio_dano.scale = Vector2.ONE * 0.18
+	raio_dano.modulate = Color(1.0, 0.7, 0.1, 0.28)
 	EFEITOS.criar_onda(
 		get_parent(),
 		global_position,
@@ -426,6 +435,14 @@ func tremer() -> void:
 			progresso,
 			0.0,
 			1.0
+		)
+		var escala_raio := lerpf(0.18, raio_explosao / 60.0, progresso)
+		raio_dano.scale = Vector2.ONE * escala_raio
+		raio_dano.modulate = Color(
+			1.0,
+			lerpf(0.7, 0.08, progresso),
+			0.02,
+			lerpf(0.22, 0.72, progresso)
 		)
 
 		if tempo >= proximo_pulso:
@@ -585,6 +602,8 @@ func explodir() -> void:
 	# ==================================================
 
 	explodindo = true
+	audio_explosao.pitch_scale = randf_range(0.96, 1.03)
+	audio_explosao.play()
 
 	carregando = false
 
@@ -610,6 +629,8 @@ func explodir() -> void:
 	# ==================================================
 
 	raio_dano.visible = true
+	raio_dano.scale = Vector2.ONE * (raio_explosao / 60.0)
+	raio_dano.modulate = Color(1.0, 0.9, 0.25, 0.9)
 
 	area_dano.monitoring = true
 	EFEITOS.criar_clarao(
@@ -632,6 +653,14 @@ func explodir() -> void:
 		Color(1.0, 0.8, 0.25, 0.7),
 		raio_explosao * 1.25,
 		0.48
+	)
+	EFEITOS.criar_faiscas(
+		get_parent(),
+		global_position,
+		Color(1.0, 0.45, 0.08, 1.0),
+		18,
+		raio_explosao * 0.9,
+		0.42
 	)
 
 

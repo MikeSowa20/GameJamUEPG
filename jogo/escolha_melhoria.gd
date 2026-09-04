@@ -13,8 +13,9 @@ func _ready() -> void:
 	botao_tokens.pressed.connect(escolher.bind("tokens"))
 
 func configurar(sala_atual: int) -> void:
-	subtitulo.text = "SALA %d CONCLUÍDA" % maxi(sala_atual - 1, 1)
-	descricao_tokens.text = "+%d tokens\n(10 × dificuldade)" % (10 * sala_atual)
+	var sala_concluida := maxi(sala_atual - 1, 1)
+	subtitulo.text = "SALA %d CONCLUÍDA" % sala_concluida
+	descricao_tokens.text = "+%d tokens\n(5 × sala %d)" % [5 * sala_concluida, sala_concluida]
 
 func escolher(tipo: String) -> void:
 	botao_velocidade.disabled = true
